@@ -1,0 +1,51 @@
+form {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ff6600;
+  color: #000;
+  padding-right: 4em;
+  padding-left: 4em;
+  padding-bottom: 4em;
+  padding-top: 2em;
+  margin: 2em;
+}
+
+.formInput {
+  width: calc(100% - 2em);
+  margin: 0;
+  padding: 1em;
+  border: 0;
+  background-color: #ff6600;
+  color: #000000;
+  font-size: 1em;
+  font-family: monospace;
+}
+
+.formInputDiv {
+  background-color: #ff4400;
+  padding: 1em;
+  margin: 0;
+}
+
+.formButton {
+  margin: 0;
+  width: 100%;
+  border: 3px solid #ff4400;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  background-color: #ff6600;
+  color: #000000;
+  font-size: 1em;
+  font-family: monospace;
+}
+
+.formButton:hover {
+  background-color: #ff8822;
+}
+
+.formButton:active {
+  background-color: #dd4400;
+  color: #000;
+}

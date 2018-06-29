@@ -1,0 +1,25 @@
+#hostButton {
+  background-color: #ff6600;
+}
+
+#hostButton:hover {
+  background-color: #ff8822;
+}
+
+#hostButton:active {
+  background-color: #dd4400;
+  color: #000;
+}
+
+#clientButton {
+  background-color: #ff6600;
+}
+
+#clientButton:hover {
+  background-color: #ff8822;
+}
+
+#clientButton:active {
+  background-color: #dd4400;
+  color: #000;
+}
