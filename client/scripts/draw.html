@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="/scripts/draw.css" />
+    <script src="/config.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>-->
+    <script src="/scripts/socketSetup.js"></script>
+  </head>
+  <body>
+    <div id="header"><h2 id="headerText">Draw</h2></div>
+    <div id="content">
+      <canvas id="canvas" ></canvas>
+      <button id="send">Send</button>
+    </div>
+
+    <script src="/scripts/point.js"></script>
+    <script src="/scripts/path.js"></script>
+    <script src="/scripts/draw.js"></script>
+  </body>
+</html>

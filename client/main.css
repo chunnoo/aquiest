@@ -25,22 +25,39 @@ html, body, head {
 
 #content {
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  height: calc(100% - 5.5em);
+}
+
+#menu {
+  display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   height: calc(100% - 5.5em);
 }
 
 button {
-  font-family: inherit;
-  font-size: 3em;
-  align: center;
+  margin: 0;
+  width: 100%;
   border: 0;
-  border-radius: 1em;
   width: calc(100% - 2em);
-  padding: 2em;
-  margin-top: 2em;
-  margin-bottom: 2em;
-  margin-right: 1em;
-  margin-left: 1em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  background-color: #ff6600;
+  color: #000000;
+  font-size: 1em;
+  font-family: monospace;
+  margin: 1em;
+}
+
+button:hover {
+  background-color: #ff8822;
+}
+
+button:active {
+  background-color: #dd4400;
+  color: #000;
 }

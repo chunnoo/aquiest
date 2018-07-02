@@ -55,6 +55,11 @@ app.get("/client/joinRoom", function(req, res) {
   res.sendFile(path.join(__dirname + "/client/client/joinRoom.html"));
 });
 
+//these are just for testing and can be removed in production
+app.get("/scripts/draw", function(req, res) {
+  res.sendFile(path.join(__dirname + "/client/scripts/draw.html"));
+});
+
 /*app.use(function(req, res, next) {
   if (!req.session.client) {
     req.session.client = {};
@@ -94,6 +99,7 @@ app.get("/*.js", function(req, res) {
 });
 
 io.on("connection", function(socket) {
+  console.log("new socket connection");
   socket.on("requestNewRoom", function(req) {
     let newRoomCode = generateRandomString(4);
     rooms[newRoomCode] = {owner: socket.id, members: {}};
@@ -108,6 +114,9 @@ io.on("connection", function(socket) {
     socket.join(req.room);
     io.sockets.to(socket.id).emit("accepted", {});
     io.sockets.to(rooms[req.room].owner).emit("newMember", {name: req.name});
+  });
+  socket.on("paths", function(msg) {
+    console.log(msg.paths);
   });
   //on disconnect remove room
 });
