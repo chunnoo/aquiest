@@ -1,159 +1,178 @@
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
+function Draw() {
+  this.canvas = document.createElement("canvas");
+  this.canvas.id = "canvas";
+  this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; margin: 1em;}";
+  this.sendButton = document.createElement("button");
+  this.sendButton.id = "send";
+  this.sendButton.innerHTML = "Send";
 
-var sendButton = document.getElementById("send");
+  let content = document.getElementById("content");
+  content.appendChild(this.canvas);
+  content.appendChild(this.sendButton);
 
-var paths = [];
-var strokeSize = 3;
-var strokeColor = "#000000";
+  this.ctx = this.canvas.getContext("2d");
 
-var mouseDown = false;
+  this.paths = [];
+  this.strokeSize = 3;
+  this.strokeColor = "#000000";
 
-function clear() {
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
+  this.mouseDown = false;
 
-function drawPath(index) {
-  let path = paths[index].getPointArray();
+  this.clear = function() {
+    this.ctx.fillStyle = "#ffffff";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  };
 
-  ctx.beginPath();
-  ctx.moveTo(path[0].x, path[0].y);
-  for (let i = 0; i < path.length; i++) {
-    ctx.lineTo(path[i].x, path[i].y);
+  this.drawPath = function(index) {
+    let path = this.paths[index].getPointArray();
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(path[0].x, path[0].y);
+    for (let i = 0; i < path.length; i++) {
+      this.ctx.lineTo(path[i].x, path[i].y);
+    }
+    this.ctx.lineWidth = this.strokeSize/this.canvas.width;
+    this.ctx.strokeStyle = this.strokeColor;
+    this.ctx.stroke();
+  };
+
+  this.resize = function() {
+    let style = window.getComputedStyle(this.canvas, null);
+    this.canvas.style.height = style.width;
+    this.canvas.width = parseInt(style.width);
+    this.canvas.height = parseInt(style.width);
+
+    this.clear();
+
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.scale(this.canvas.width, this.canvas.height);
+
+    for (let i = 0; i < this.paths.length; i++) {
+      this.drawPath(i);
+    }
+  };
+
+  this.init = function() {
+    this.resize();
+  };
+
+  this.startDraw = function(point) {
+    this.paths.push(new Path());
+    this.paths[this.paths.length - 1].addPoint(point);
+  };
+
+  this.continueDraw = function(point) {
+    let prev = this.paths[this.paths.length - 1].getLastPoint();
+    this.paths[this.paths.length - 1].addPoint(point);
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(prev.x, prev.y);
+    this.ctx.lineTo(point.x, point.y);
+    this.ctx.lineWidth = this.strokeSize/this.canvas.width;
+    this.ctx.strokeStyle = this.strokeColor;
+    this.ctx.stroke();
+  };
+
+  this.endDraw = function(point) {
+    this.paths[this.paths.length - 1].addPoint(point);
+    this.paths[this.paths.length - 1].simplify();
+    //drawPath(paths.length - 1);
+  };
+
+  this.getMousePoint = function(e) {
+    let rect = this.canvas.getBoundingClientRect();
+    return new Point((e.clientX - rect.left)/this.canvas.width, (e.clientY - rect.top)/this.canvas.height);
+  };
+
+  this.getTouchPoint = function(e) {
+    let rect = this.canvas.getBoundingClientRect();
+    return new Point((e.pageX - this.canvas.offsetLeft)/this.canvas.width, (e.pageY - this.canvas.offsetTop)/this.canvas.height);
+  };
+
+  this.canvas.onmousedown = function(e) {
+    this.mouseDown = true;
+    this.startDraw(this.getMousePoint(e));
+  }.bind(this);
+
+  this.canvas.onmousemove = function(e) {
+    if (this.mouseDown) {
+      this.continueDraw(this.getMousePoint(e));
+    }
+  }.bind(this);
+
+  this.canvas.onmouseup = function(e) {
+    if (this.mouseDown) {
+      this.endDraw(this.getMousePoint(e));
+    }
+    this.mouseDown = false;
+  }.bind(this);
+
+  this.canvas.onmouseout = function(e) {
+    if (this.mouseDown) {
+      this.endDraw(this.getMousePoint(e));
+    }
+    this.mouseDown = false;
+  }.bind(this);
+
+  this.canvas.ontouchstart = function(e) {
+    e.preventDefault();
+    this.mouseDown = true;
+    this.startDraw(this.getTouchPoint(e));
+  }.bind(this);
+
+  this.canvas.ontouchenter = function(e) {
+    e.preventDefault();
+    this.mouseDown = true;
+    this.startDraw(this.getTouchPoint(e));
+  }.bind(this);
+
+  this.canvas.ontouchmove = function(e) {
+    e.preventDefault();
+    if (this.mouseDown) {
+      this.continueDraw(this.getTouchPoint(e));
+    }
+  }.bind(this);
+
+  this.canvas.ontouchend = function(e) {
+    e.preventDefault();
+    if (this.mouseDown) {
+      this.endDraw(this.getTouchPoint(e));
+    }
+    this.mouseDown = false;
+  }.bind(this);
+
+  this.canvas.ontouchcancel = function(e) {
+    e.preventDefault();
+    if (this.mouseDown) {
+      this.endDraw(this.getTouchPoint(e));
+    }
+    this.mouseDown = false;
+  }.bind(this);
+
+  this.canvas.ontouchleave = function(e) {
+    e.preventDefault();
+    if (this.mouseDown) {
+      this.endDraw(this.getTouchPoint(e));
+    }
+    this.mouseDown = false;
+  }.bind(this);
+
+  this.sendButton.onclick = function() {
+    socket.emit("paths", {paths: this.paths});
+    this.paths = [];
+    this.clear();
+  }.bind(this);
+
+  window.onresize = function(e) {
+    this.resize();
+  }.bind(this);
+
+  this.delete = function() {
+    window.onresize = function(e) {
+
+    };
+    let content = document.getElementById("content");
+    content.removeChild(this.canvas);
+    content.removeChild(this.sendButton);
   }
-  ctx.lineWidth = strokeSize/canvas.width;
-  ctx.strokeStyle = strokeColor;
-  ctx.stroke();
 }
-
-function resize() {
-  let style = window.getComputedStyle(canvas, null);
-  canvas.style.height = style.width;
-  canvas.width = parseInt(style.width);
-  canvas.height = parseInt(style.width);
-
-  clear();
-
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(canvas.width, canvas.height);
-
-  for (let i = 0; i < paths.length; i++) {
-    drawPath(i);
-  }
-}
-
-function init() {
-  resize();
-}
-
-function startDraw(point) {
-  paths.push(new Path());
-  paths[paths.length - 1].addPoint(point);
-}
-
-function continueDraw(point) {
-  let prev = paths[paths.length - 1].getLastPoint();
-  paths[paths.length - 1].addPoint(point);
-
-  ctx.beginPath();
-  ctx.moveTo(prev.x, prev.y);
-  ctx.lineTo(point.x, point.y);
-  ctx.lineWidth = strokeSize/canvas.width;
-  ctx.strokeStyle = strokeColor;
-  ctx.stroke();
-}
-
-function endDraw(point) {
-  paths[paths.length - 1].addPoint(point);
-  paths[paths.length - 1].simplify();
-  //drawPath(paths.length - 1);
-}
-
-function getMousePoint(e) {
-  let rect = canvas.getBoundingClientRect();
-  return new Point((e.clientX - rect.left)/canvas.width, (e.clientY - rect.top)/canvas.height);
-}
-
-function getTouchPoint(e) {
-  let rect = canvas.getBoundingClientRect();
-  return new Point((e.pageX - canvas.offsetLeft)/canvas.width, (e.pageY - canvas.offsetTop)/canvas.height);
-}
-
-canvas.onmousedown = function(e) {
-  mouseDown = true;
-  startDraw(getMousePoint(e));
-}
-
-canvas.onmousemove = function(e) {
-  if (mouseDown) {
-    continueDraw(getMousePoint(e));
-  }
-}
-
-canvas.onmouseup = function(e) {
-  if (mouseDown) {
-    endDraw(getMousePoint(e));
-  }
-  mouseDown = false;
-}
-
-canvas.onmouseout = function(e) {
-  if (mouseDown) {
-    endDraw(getMousePoint(e));
-  }
-  mouseDown = false;
-}
-
-canvas.ontouchstart = function(e) {
-  e.preventDefault();
-  mouseDown = true;
-  startDraw(getTouchPoint(e));
-}
-
-canvas.ontouchenter = function(e) {
-  e.preventDefault();
-  mouseDown = true;
-  startDraw(getTouchPoint(e));
-}
-
-canvas.ontouchmove = function(e) {
-  e.preventDefault();
-  if (mouseDown) {
-    continueDraw(getTouchPoint(e));
-  }
-}
-
-canvas.ontouchend = function(e) {
-  e.preventDefault();
-  if (mouseDown) {
-    endDraw(getTouchPoint(e));
-  }
-  mouseDown = false;
-}
-
-canvas.ontouchcancel = function(e) {
-  e.preventDefault();
-  if (mouseDown) {
-    endDraw(getTouchPoint(e));
-  }
-  mouseDown = false;
-}
-
-canvas.ontouchleave = function(e) {
-  e.preventDefault();
-  if (mouseDown) {
-    endDraw(getTouchPoint(e));
-  }
-  mouseDown = false;
-}
-
-send.onclick = function() {
-  socket.emit("paths", {paths: paths});
-  paths = [];
-  clear();
-}
-
-window.onload = init;
-
-window.onresize = resize;
