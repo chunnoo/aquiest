@@ -56,8 +56,11 @@ app.get("/client/joinRoom", function(req, res) {
 });
 
 //these are just for testing and can be removed in production
-app.get("/scripts/draw", function(req, res) {
-  res.sendFile(path.join(__dirname + "/client/scripts/draw.html"));
+app.get("/scripts/clientTest", function(req, res) {
+  res.sendFile(path.join(__dirname + "/client/scripts/clientTest.html"));
+});
+app.get("/scripts/hostTest", function(req, res) {
+  res.sendFile(path.join(__dirname + "/client/scripts/hostTest.html"));
 });
 
 /*app.use(function(req, res, next) {
@@ -102,7 +105,7 @@ io.on("connection", function(socket) {
   console.log("new socket connection");
   socket.on("requestNewRoom", function(req) {
     let newRoomCode = generateRandomString(4);
-    rooms[newRoomCode] = {owner: socket.id, members: {}};
+    rooms[newRoomCode] = {owner: socket.id, game: "none", members: {}};
     roomOwners[socket.id] = {room: newRoomCode};
     socket.join(newRoomCode);
     io.sockets.in(newRoomCode).emit("newRoom", {room: newRoomCode});
@@ -116,7 +119,11 @@ io.on("connection", function(socket) {
     io.sockets.to(rooms[req.room].owner).emit("newMember", {name: req.name});
   });
   socket.on("paths", function(msg) {
-    console.log(msg.paths);
+    console.log(msg.paths.length);
+    io.sockets.emit("paths", msg);
+  });
+  socket.on("text", function(msg) {
+    console.log(msg.text);
   });
   //on disconnect remove room
 });
