@@ -1,4 +1,4 @@
-var display = new Display();
+var display = new DisplayCanvas();
 display.init();
 
 socket.on("paths", function(msg) {

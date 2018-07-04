@@ -1,4 +1,4 @@
-function Display() {
+function DisplayCanvas() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
   this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; margin: 1em;}";
@@ -51,6 +51,12 @@ function Display() {
     this.paths.push(path);
     this.drawPath(this.paths.length - 1);
   };
+
+  this.addPaths = function(paths) {
+    for (let i = 0; i < paths.length; i++) {
+      this.addPath(paths[i]);
+    }
+  }
 
   this.init = function() {
     this.resize();

@@ -72,3 +72,7 @@ input {
   font-size: 1em;
   font-family: monospace;
 }
+
+#text {
+  text-align: center;
+}

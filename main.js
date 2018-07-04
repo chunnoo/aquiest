@@ -26,8 +26,13 @@ var serverPort = 8080;
 var server = http.createServer(app);
 var io = require('socket.io')(server);
 
+var teledraw = require("./server/teledraw.js");
+
 var rooms = {};
 var roomOwners = {};
+var roomMembers = {};
+
+var games = {};
 
 var roomCaracters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function generateRandomString(length) {
@@ -105,26 +110,74 @@ io.on("connection", function(socket) {
   console.log("new socket connection");
   socket.on("requestNewRoom", function(req) {
     let newRoomCode = generateRandomString(4);
-    rooms[newRoomCode] = {owner: socket.id, game: "none", members: {}};
-    roomOwners[socket.id] = {room: newRoomCode};
+    rooms[newRoomCode] = {owner: socket.id, game: "none", members: {}, memberNames: {}, ready: 0};
+    roomOwners[socket.id] = newRoomCode;
     socket.join(newRoomCode);
     io.sockets.in(newRoomCode).emit("newRoom", {room: newRoomCode});
     console.log("New room: " + newRoomCode + ", owner: " + socket.id);
   });
   socket.on("joinRoom", function(req) { //check for room existence
     console.log(req);
+    //let firstRoomMember = Object.keys(rooms[req.room].members).length == 0;
     rooms[req.room].members[req.name] = socket.id;
+    rooms[req.room].memberNames[socket.id] = req.name;
+    roomMembers[socket.id] = req.room;
     socket.join(req.room);
     io.sockets.to(socket.id).emit("accepted", {});
     io.sockets.to(rooms[req.room].owner).emit("newMember", {name: req.name});
+    //if (firstRoomMember) {
+      socket.emit("addButton", {text: "ready", value: "ready"});
+    //}
   });
+  socket.on("button", function(msg) {
+    if (msg.value === "ready") {
+      let roomCode = roomMembers[socket.id];
+      rooms[roomCode].ready++;
+      socket.emit("text", {text: "ready"});
+      if (rooms[roomCode].ready == Object.keys(rooms[roomCode].members).length) {
+        io.sockets.to(roomMembers[socket.id]).emit("start", {});
+      }
+    } else if (msg.value === "clientData") {
+      let roomCode = roomMembers[socket.id];
+      games[roomCode].clientData(io, socket, rooms[roomCode].memberNames[socket.id], msg);
+    }
+  });
+  socket.on("start", function(msg) {
+    if (socket.id in roomOwners) {
+      let roomCode = roomOwners[socket.id];
+      games[roomCode] = new teledraw(rooms[roomCode].members, socket.id, roomCode);
+      games[roomCode].start(io, socket);
+    }
+  });
+  socket.on("clientData", function(msg) {
+    let roomCode = roomMembers[socket.id];
+    games[roomCode].clientData(io, socket, rooms[roomCode].memberNames[socket.id], msg);
+  });
+  socket.on("next", function(msg) {
+    let roomCode = roomOwners[socket.id];
+    games[roomCode].next(io, socket);
+  });
+
+  socket.on("text", function(msg) {
+    let roomCode = roomMembers[socket.id];
+    games[roomCode].clientData(io, socket, rooms[roomCode].memberNames[socket.id], msg);
+  });
+
   socket.on("paths", function(msg) {
+    let roomCode = roomMembers[socket.id];
+    games[roomCode].clientData(io, socket, rooms[roomCode].memberNames[socket.id], msg);
+  });
+
+  //these are for testing
+  /*socket.on("paths", function(msg) {
     console.log(msg.paths.length);
     io.sockets.emit("paths", msg);
   });
   socket.on("text", function(msg) {
     console.log(msg.text);
-  });
+    io.sockets.emit("text", msg);
+  });*/
+
   //on disconnect remove room
 });
 
