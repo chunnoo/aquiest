@@ -1,7 +1,7 @@
 function Draw() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
-  this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; margin: 1em;}";
+  //this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; max-height: calc(100% - 2em); margin: 1em;}";
   this.sendButton = document.createElement("button");
   this.sendButton.id = "send";
   this.sendButton.innerHTML = "Send";
@@ -40,7 +40,7 @@ function Draw() {
     let style = window.getComputedStyle(this.canvas, null);
     this.canvas.style.height = style.width;
     this.canvas.width = parseInt(style.width);
-    this.canvas.height = parseInt(style.width);
+    this.canvas.height = parseInt(style.height);
 
     this.clear();
 

@@ -1,4 +1,7 @@
 function Write() {
+  this.form = document.createElement("form");
+  this.form.id = "form";
+
   this.input = document.createElement("input");
   this.input.id = "input";
   this.input.type = "text";
@@ -6,13 +9,16 @@ function Write() {
   this.input.placeholder = "Text";
   this.input.autocomplete = "off";
 
-  this.sendButton = document.createElement("button");
+  this.sendButton = document.createElement("input");
   this.sendButton.id = "send";
+  this.sendButton.className = "button";
+  this.sendButton.type = "submit";
   this.sendButton.innerHTML = "Send";
 
   let content = document.getElementById("content");
-  content.appendChild(this.input);
-  content.appendChild(this.sendButton);
+  this.form.appendChild(this.input);
+  this.form.appendChild(this.sendButton);
+  content.appendChild(this.form);
 
   this.init = function() {
 
@@ -22,14 +28,16 @@ function Write() {
     this.input.placeholder = text;
   };
 
-  this.sendButton.onclick = function() {
+  this.form.onsubmit = function(e) {
+    e.preventDefault();
     socket.emit("text", {text: this.input.value});
     this.input.value = "";
   }.bind(this);
 
   this.delete = function() {
     let content = document.getElementById("content");
-    content.removeChild(this.input);
-    content.removeChild(this.sendButton);
+    this.form.removeChild(this.input);
+    this.form.removeChild(this.sendButton);
+    content.removeChild(this.form);
   };
 }

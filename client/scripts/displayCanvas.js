@@ -1,7 +1,8 @@
 function DisplayCanvas() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
-  this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; margin: 1em;}";
+
+  //this.canvas.style.cssText = "width: calc(100vmin - 2em); height: calc(100vmin - 2em); margin: 1em; margin-left: auto; margin-right: auto;";
 
   let content = document.getElementById("content");
   content.appendChild(this.canvas);
@@ -34,7 +35,7 @@ function DisplayCanvas() {
     let style = window.getComputedStyle(this.canvas, null);
     this.canvas.style.height = style.width;
     this.canvas.width = parseInt(style.width);
-    this.canvas.height = parseInt(style.width);
+    this.canvas.height = parseInt(style.height);
 
     this.clear();
 

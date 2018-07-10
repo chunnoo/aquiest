@@ -23,5 +23,6 @@ function Button() {
   this.delete = function() {
     let content = document.getElementById("content");
     content.removeChild(this.button);
+    this.button = null;
   };
 }

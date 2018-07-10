@@ -3,5 +3,5 @@ document.getElementById("hostButton").onclick = function() {
 };
 
 document.getElementById("clientButton").onclick = function() {
-  window.location.href = "/client/joinRoom";
+  window.location.href = "/client/client";
 };

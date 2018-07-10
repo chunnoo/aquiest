@@ -4,11 +4,25 @@ var room = null;
 
 var content = [];
 
+function setClientData(receivedName, receivedRoom) {
+  name = receivedName;
+  room = receivedRoom;
+  document.getElementById("headerText").innerHTML = name;
+  document.getElementById("headerInfo").innerHTML = room;
+}
+
 function clear() {
   for (let i = 0; i < content.length; i++) {
     content[i].delete();
   }
   content = [];
+}
+
+function addJoin(firstPlaceholder, secondPlaceholder) {
+  let join = new Join();
+  join.init();
+  join.setPlaceholders(firstPlaceholder, secondPlaceholder);
+  content.push(join);
 }
 
 function addDisplayText(msgText) {
@@ -44,7 +58,9 @@ function addButton(msgText, msgReturnValue) {
 }
 
 socket.on("connect", function() {
-  fetch("/client/client", {method: "POST", credentials: "same-origin"})
+  clear();
+  addJoin("Name", "Room");
+  /*fetch("/client/client", {method: "POST", credentials: "same-origin"})
     .then(function(res) {
       if (res.status !== 200) {
         console.log("Status code: " + res.status);
@@ -65,10 +81,18 @@ socket.on("connect", function() {
     })
     .catch(function(err) {
       console.log("Error:" + err);
-    });
+    });*/
+});
+
+socket.on("rejected", function(msg) {
+  clear();
+  addJoin("Name", "Room");
+  addDisplayText(msg.text);
 });
 
 socket.on("accepted", function(msg) {
+  clear();
+  setClientData(msg.name, msg.room);
   addDisplayText("Accepted into room");
 });
 
