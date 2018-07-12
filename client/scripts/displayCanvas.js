@@ -2,8 +2,6 @@ function DisplayCanvas() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
 
-  //this.canvas.style.cssText = "width: calc(100vmin - 2em); height: calc(100vmin - 2em); margin: 1em; margin-left: auto; margin-right: auto;";
-
   let content = document.getElementById("content");
   content.appendChild(this.canvas);
 

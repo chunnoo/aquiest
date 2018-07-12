@@ -60,28 +60,6 @@ function addButton(msgText, msgReturnValue) {
 socket.on("connect", function() {
   clear();
   addJoin("Name", "Room");
-  /*fetch("/client/client", {method: "POST", credentials: "same-origin"})
-    .then(function(res) {
-      if (res.status !== 200) {
-        console.log("Status code: " + res.status);
-        return;
-      }
-      //res.json().then(function(data) {
-        //console.log(data);
-      //});
-      res.json().then(function(data) {
-        name = data.name;
-        room = data.room;
-
-        document.getElementById("headerText").innerHTML = name;
-        document.getElementById("headerInfo").innerHTML = room;
-
-        socket.emit("joinRoom", {name: name, room: room});
-      });
-    })
-    .catch(function(err) {
-      console.log("Error:" + err);
-    });*/
 });
 
 socket.on("rejected", function(msg) {

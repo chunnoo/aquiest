@@ -1,7 +1,6 @@
 function Draw() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
-  //this.canvas.style.cssText = "#canvas {width: calc(100% - 2em); max-width: 1024px; height: auto; max-height: calc(100% - 2em); margin: 1em;}";
   this.sendButton = document.createElement("button");
   this.sendButton.id = "send";
   this.sendButton.innerHTML = "Send";

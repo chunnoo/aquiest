@@ -1,0 +1,32 @@
+.gamesMenu {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  width: calc(100% - 2em);
+  height: auto;
+  margin: 1em;
+
+}
+
+.menuGame {
+  display: block;
+  background-color: #ff6600;
+  font-family: inherit;
+  font-size: 2em;
+  align: center;
+  border: 0;
+  border-radius: 0.5em;
+  width: 8em;
+  height: 6em;
+  margin: 0.5em;
+}
+
+.menuGame:hover {
+  background-color: #ff8822;
+}
+
+.menuGame:active {
+  background-color: #dd4400;
+  color: #000;
+}
