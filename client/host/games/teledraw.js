@@ -60,7 +60,7 @@ function Game() {
     } else {
       this.received = 0;
 
-      emitToRoom("button", {text: "Next", value: "clientData"});
+      emitToRoom("button", {text: "Next", type: "clientData", value: "next"});
 
       if (this.round == this.clients.length * this.clients.length) {
         emitToRoom("text", {text: "Game finished"});
@@ -101,5 +101,9 @@ function Game() {
         next();
       }
     }
+  };
+
+  this.join = function(name, id) {
+    rejectClient(id, "Can't join during game");
   };
 }

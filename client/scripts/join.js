@@ -20,7 +20,7 @@ function Join() {
   this.submit.type = "submit";
   this.submit.id = "submit";
   this.submit.className = "button";
-  this.submit.innerHTML = "Join";
+  this.submit.value = "Join";
 
   this.form.appendChild(this.first);
   this.form.appendChild(this.second);

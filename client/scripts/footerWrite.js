@@ -1,24 +1,23 @@
-function Write() {
+function FooterWrite() {
   this.form = document.createElement("form");
-  this.form.id = "form";
+  this.form.id = "footerWriteForm";
 
   this.input = document.createElement("input");
-  this.input.id = "input";
+  this.input.id = "footerWriteInput";
   this.input.type = "text";
   this.input.name = "input";
   this.input.placeholder = "Text";
   this.input.autocomplete = "off";
 
   this.sendButton = document.createElement("input");
-  this.sendButton.id = "send";
-  this.sendButton.className = "button";
+  this.sendButton.id = "footerWriteButton";
   this.sendButton.type = "submit";
   this.sendButton.value = "Send";
 
-  let content = document.getElementById("content");
+  let footer = document.getElementById("footer");
   this.form.appendChild(this.input);
   this.form.appendChild(this.sendButton);
-  content.appendChild(this.form);
+  footer.appendChild(this.form);
 
   this.init = function() {
 
@@ -35,9 +34,9 @@ function Write() {
   }.bind(this);
 
   this.delete = function() {
-    let content = document.getElementById("content");
+    let footer = document.getElementById("footer");
     this.form.removeChild(this.input);
     this.form.removeChild(this.sendButton);
-    content.removeChild(this.form);
+    footer.removeChild(this.form);
   };
 }

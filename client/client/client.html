@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/main.css" />
     <link rel="stylesheet" href="/client/client.css" />
     <script src="/config.js"></script>
@@ -9,9 +9,10 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <div id="header"><h2 id="headerText">Name</h2><h2 id="headerInfo">Room</h2></div>
-    <div id="content">
-
+    <div id="wrapper">
+      <div id="header"><h2 id="headerText">Name</h2><h2 id="headerInfo">Room</h2></div>
+      <div id="content"></div>
+      <div id="footer"></div>
     </div>
 
     <script src="/scripts/point.js"></script>
@@ -19,7 +20,9 @@
     <script src="/scripts/join.js"></script>
     <script src="/scripts/draw.js"></script>
     <script src="/scripts/write.js"></script>
+    <script src="/scripts/footerWrite.js"></script>
     <script src="/scripts/button.js"></script>
+    <script src="/scripts/multiButton.js"></script>
     <script src="/scripts/displayCanvas.js"></script>
     <script src="/scripts/displayText.js"></script>
     <script src="/client/client.js"></script>

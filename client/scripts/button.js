@@ -6,10 +6,12 @@ function Button() {
   let content = document.getElementById("content");
   content.appendChild(this.button);
 
-  this.returnValue = "";
+  this.type = "";
+  this.value = "";
 
-  this.init = function(returnValue) {
-    this.returnValue = returnValue;
+  this.init = function(type, value) {
+    this.type = type;
+    this.value = value;
   };
 
   this.setText = function(text) {
@@ -17,7 +19,7 @@ function Button() {
   };
 
   this.button.onclick = function() {
-    socket.emit("button", {value: this.returnValue});
+    socket.emit("button", {type: this.type, value: this.value});
   }.bind(this);
 
   this.delete = function() {

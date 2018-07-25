@@ -85,7 +85,11 @@ function Draw() {
 
   this.getTouchPoint = function(e) {
     let rect = this.canvas.getBoundingClientRect();
-    return new Point((e.pageX - this.canvas.offsetLeft)/this.canvas.width, (e.pageY - this.canvas.offsetTop)/this.canvas.height);
+    if (e.pageX && e.pageY) {
+      return new Point((e.pageX - this.canvas.offsetLeft)/this.canvas.width, (e.pageY - this.canvas.offsetTop)/this.canvas.height);
+    } else {
+      return new Point((e.changedTouches[0].pageX - this.canvas.offsetLeft)/this.canvas.width, (e.changedTouches[0].pageY - this.canvas.offsetTop)/this.canvas.height);
+    }
   };
 
   this.canvas.onmousedown = function(e) {

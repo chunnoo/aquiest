@@ -7,14 +7,14 @@ function GameScript(game) {
     initGame();
   };
 
-  let content = document.getElementById("content");
+  let scripts = document.getElementById("scripts");
   this.script.src = "/host/games/" + game + ".js";
-  content.appendChild(this.script);
+  scripts.appendChild(this.script);
 
 
   this.delete = function() {
-    let content = document.getElementById("content");
-    content.removeChild(this.script);
+    let scripts = document.getElementById("scripts");
+    scripts.removeChild(this.script);
     this.script = null;
   }
 }
