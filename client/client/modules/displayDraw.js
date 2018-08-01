@@ -1,4 +1,4 @@
-function DisplayCanvas() {
+_modules["displayDraw"] = function() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
 
@@ -57,18 +57,20 @@ function DisplayCanvas() {
     }
   }
 
-  this.init = function() {
+  this.init = function(data) {
     this.resize();
+    this.addPaths(data.paths);
   };
 
-  window.onresize = function(e) {
+  this.update = function(data) {
+    this.addPaths(data.paths);
+  }
+
+  this.canvas.onresize = function(e) {
     this.resize();
   }.bind(this);
 
   this.delete = function() {
-    window.onresize = function(e) {
-
-    };
     let content = document.getElementById("content");
     content.removeChild(this.canvas);
   }

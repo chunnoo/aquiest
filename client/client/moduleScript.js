@@ -1,14 +1,17 @@
-function GameScript(game) {
-  this.game = game;
+function ModuleScript(module, callback) {
+  this.module = module;
 
   this.script = document.createElement("script");
 
+  this.loaded = false;
+
   this.script.onload = function() {
-    initGame();
-  };
+    this.loaded = true;
+    moduleLoaded(callback);
+  }.bind(this);
 
   let scripts = document.getElementById("scripts");
-  this.script.src = "/host/games/" + game + ".js";
+  this.script.src = "/client/modules/" + this.module + ".js";
   scripts.appendChild(this.script);
 
 

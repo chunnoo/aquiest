@@ -6,7 +6,7 @@ function Game() {
   this.received = 0;
   this.data = {};
 
-  this.start = function(clients) {
+  this.init = function(clients) {
     this.clients = clients;
     for (let i = 0; i < this.clients.length; i++) {
       this.data[this.clients[i]] = [];
@@ -14,10 +14,10 @@ function Game() {
     this.round = 0;
     this.received = 0;
 
-    for (let i = 0; i < this.clients.length; i++) {
-      this.data[this.clients] = [];
-    }
+    roomLoadModules(["point", "path", "draw", "write", "displayDraw"]);
+  }
 
+  this.start = function() {
     console.log("TeledrawStart");
     console.log(this.clients);
     console.dir(this.data);
@@ -25,7 +25,7 @@ function Game() {
     clear();
     addDisplayText("Write Something");
 
-    emitToRoom("write", {text: "Type something"});
+    toRoom("clearAndAddModule", {module: "write", data: {text: "Type something"}});
   };
 
   this.next = function() {
@@ -36,7 +36,7 @@ function Game() {
       if (this.round == this.clients.length) {
         this.finished = true;
         this.round = 0;
-        emitToRoom("text", {text: "Game finished"});
+        toRoom("clearAndAddModule", {module: "text", data: {text: "Game finished"}});
         next();
       } else {
         if (this.round % 2 == 0) {
@@ -45,7 +45,13 @@ function Game() {
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
-            emitToClient(this.clients[i], "displayCanvasAndWrite", msg);
+            //emitToClient(this.clients[i], "displayCanvasAndWrite", msg);
+            toClient(this.clients[i], "clearAndAddModules", {
+              modules: [
+                {module: "displayDraw", data: {paths: msg.paths}},
+                {module: "write", data: {text: "write"}}
+              ]
+            });
           }
         } else if (this.round % 2 == 1) {
           clear();
@@ -53,17 +59,23 @@ function Game() {
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
-            emitToClient(this.clients[i], "displayTextAndDraw", msg);
+            //emitToClient(this.clients[i], "displayTextAndDraw", msg);
+            toClient(this.clients[i], "clearAndAddModules", {
+              modules: [
+                {module: "text", data: {text: msg.text}},
+                {module: "draw", data: {}}
+              ]
+            });
           }
         }
       }
     } else {
       this.received = 0;
 
-      emitToRoom("button", {text: "Next", type: "clientData", value: "next"});
+      toRoom("clearAndAddModule", {module: "button", data: {text: "Next", value: "next"}});
 
       if (this.round == this.clients.length * this.clients.length) {
-        emitToRoom("text", {text: "Game finished"});
+        toRoom("clearAndAddModule", {module: "text", data: {text: "Game finished"}});
         clear();
         addDisplayText("Game finished");
       } else if ((this.round % this.clients.length) % 2 == 0) {
@@ -89,14 +101,14 @@ function Game() {
 
       this.data[client].push(data);
 
-      emitToClient(client, "text", {text: "Wait for other players"});
+      toClient(client, "clearAndAddModule", {module: "text", data: {text: "Wait for other players"}});
 
       if (this.received == this.clients.length) {
         next();
       }
     } else {
       this.received++;
-      emitToClient(client, "text", {text: "Wait for others"});
+      toClient(client, "clearAndAddModule", {module: "text", data: {text: "Wait for others"}});
       if (this.received == this.clients.length) {
         next();
       }

@@ -1,31 +1,32 @@
-function FooterWrite() {
+_modules["write"] = function() {
   this.form = document.createElement("form");
-  this.form.id = "footerWriteForm";
+  this.form.id = "form";
 
   this.input = document.createElement("input");
-  this.input.id = "footerWriteInput";
+  this.input.id = "input";
   this.input.type = "text";
   this.input.name = "input";
   this.input.placeholder = "Text";
   this.input.autocomplete = "off";
 
   this.sendButton = document.createElement("input");
-  this.sendButton.id = "footerWriteButton";
+  this.sendButton.id = "send";
+  this.sendButton.className = "button";
   this.sendButton.type = "submit";
   this.sendButton.value = "Send";
 
-  let footer = document.getElementById("footer");
+  let content = document.getElementById("content");
   this.form.appendChild(this.input);
   this.form.appendChild(this.sendButton);
-  footer.appendChild(this.form);
+  content.appendChild(this.form);
 
-  this.init = function() {
-
+  this.init = function(data) {
+    this.input.placeholder = data.text;
   };
 
-  this.setPlaceholder = function(text) {
-    this.input.placeholder = text;
-  };
+  this.update = function(data) {
+    this.input.placeholder = data.text;
+  }
 
   this.form.onsubmit = function(e) {
     e.preventDefault();
@@ -34,9 +35,9 @@ function FooterWrite() {
   }.bind(this);
 
   this.delete = function() {
-    let footer = document.getElementById("footer");
+    let content = document.getElementById("content");
     this.form.removeChild(this.input);
     this.form.removeChild(this.sendButton);
-    footer.removeChild(this.form);
+    content.removeChild(this.form);
   };
 }

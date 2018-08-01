@@ -1,4 +1,4 @@
-function Draw() {
+_modules["draw"] = function() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
   this.sendButton = document.createElement("button");
@@ -51,7 +51,7 @@ function Draw() {
     }
   };
 
-  this.init = function() {
+  this.init = function(data) {
     this.resize();
   };
 
@@ -166,14 +166,15 @@ function Draw() {
     this.clear();
   }.bind(this);
 
-  window.onresize = function(e) {
+  this.canvas.onresize = function(e) {
     this.resize();
   }.bind(this);
 
-  this.delete = function() {
-    window.onresize = function(e) {
+  this.update = function(data) {
 
-    };
+  };
+
+  this.delete = function() {
     let content = document.getElementById("content");
     content.removeChild(this.canvas);
     content.removeChild(this.sendButton);

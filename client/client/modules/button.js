@@ -1,4 +1,4 @@
-function Button() {
+_modules["button"] = function() {
   this.button = document.createElement("button");
   this.button.id = "button";
   this.button.innerHTML = "button";
@@ -9,13 +9,18 @@ function Button() {
   this.type = "";
   this.value = "";
 
-  this.init = function(type, value) {
-    this.type = type;
-    this.value = value;
+  this.init = function(data) {
+    if (!data.type) {
+      this.type = "clientData";
+    } else {
+      this.type = data.type;
+    }
+    this.value = data.value;
+    this.button.innerHTML = data.text;
   };
 
-  this.setText = function(text) {
-    this.button.innerHTML = text;
+  this.update = function(data) {
+    this.button.innerHTML = data.text;
   };
 
   this.button.onclick = function() {

@@ -2,8 +2,16 @@ var socket = io("http://" + CONFIG_IP + ":8080");
 var name = null;
 var room = null;
 
+var _moduleScripts = [];
+var _pushingModules = false;
+var _loading = false;
+var _modules = {};
+
 var _content = [];
 var _footer = null;
+
+var _contentQueue = [];
+var _footerQueue = null;
 
 function addToContent(element) {
   _content.push(element);
@@ -18,13 +26,6 @@ function setClientData(receivedName, receivedRoom) {
   document.getElementById("headerInfo").innerHTML = room;
 }
 
-function clear() {
-  for (let i = 0; i < _content.length; i++) {
-    _content[i].delete();
-  }
-  _content = [];
-}
-
 function addJoin(firstPlaceholder, secondPlaceholder) {
   let join = new Join();
   join.init();
@@ -32,83 +33,130 @@ function addJoin(firstPlaceholder, secondPlaceholder) {
   addToContent(join);
 }
 
-function addDisplayText(msgText) {
-  let displayText = new DisplayText();
-  displayText.setText(msgText);
-  addToContent(displayText);
+function loadModules(modules, callback) {
+  _pushingModules = true;
+  _loading = true;
+  for (let i = 0; i < modules.length; i++) {
+    let moduleScript = new ModuleScript(modules[i], callback);
+    _moduleScripts.push(moduleScript);
+  }
+  _pushingModules = false;
 }
 
-function addDisplayTextAlign(msgText, align) {
-  let displayText = new DisplayText();
-  displayText.setText(msgText);
-  displayText.setAlign(align);
-  addToContent(displayText);
+function addQueue() {
+  while (_contentQueue.length > 0) {
+    let next = _contentQueue[0];
+    _contentQueue.shift();
+    if (next === "clear") {
+      clear();
+    } else {
+      addModule(next.name, next.data);
+    }
+  }
+  if (_footerQueue !== null) {
+    if (_footerQueue === "none") {
+      disableFooter();
+    } else {
+      setFooter(_footerQueue.module, _footerQueue.data);
+    }
+  }
+  _footerQueue = null;
 }
 
-function addDisplayCanvas(msgPaths) {
-  let displayCanvas = new DisplayCanvas();
-  displayCanvas.init();
-  displayCanvas.addPaths(msgPaths);
-  addToContent(displayCanvas);
-}
-
-function addWrite(msgPlaceholder) {
-  let write = new Write();
-  write.setPlaceholder(msgPlaceholder);
-  addToContent(write);
-}
-
-function disableFooter() {
-  if (_footer) {
-    _footer.delete();
-    _footer = null;
+function moduleLoaded(callback) {
+  if (!_pushingModules) {
+    let allLoaded = true;
+    for (let i = 0; i < _moduleScripts.length; i++) {
+      allLoaded = allLoaded && _moduleScripts[i].loaded;
+    }
+    if (allLoaded) {
+      if (callback === "respond") {
+        socket.emit("loaded", {});
+      } else if (callback === "init") {
+        addJoin("Name", "Room");
+      }
+      _loading = false;
+      addQueue();
+    }
   }
 }
 
-function enableFooterWrite(placeholder) {
-  disableFooter();
-  let footerWrite = new FooterWrite();
-  footerWrite.init();
-  footerWrite.setPlaceholder(placeholder);
-  _footer = footerWrite;
+function clear() {
+  for (let i = 0; i < _content.length; i++) {
+    _content[i].delete();
+  }
+  _content = [];
 }
 
-function addDraw() {
-  let draw = new Draw();
-  draw.init();
-  addToContent(draw);
+function addModule(name, data) {
+  if (_loading) {
+    let next = {name: name, data: data};
+    _contentQueue.push(next);
+  } else {
+    let newModule = new _modules[name]();
+    newModule.init(data);
+    addToContent(newModule);
+  }
 }
 
-function addButton(msgText, msgType, msgValue) {
-  let button = new Button();
-  button.init(msgType, msgValue);
-  button.setText(msgText);
+function addText(text) {
+  let displayText = new _modules["text"]();
+  displayText.init({text: text});
+  addToContent(displayText);
+}
+
+function addButton(type, value, text) {
+  let button = new _modules["button"]();
+  button.init({type: type, value: value, text: text});
   addToContent(button);
 }
 
-function addMultiButton(number, texts, values) {
-  let multiButton = new MultiButton(number);
-  multiButton.init(values);
-  multiButton.setTexts(texts);
-  addToContent(multiButton);
+function disableFooter() {
+  if (_loading) {
+    _footerQueue = "none";
+  } else {
+    if (_footer) {
+      _footer.delete();
+      _footer = null;
+    }
+  }
+}
+
+function setFooter(module, data) {
+  if (_loading) {
+    _footerQueue = {module: module, data: data};
+  } else {
+    disableFooter();
+    let footerModule = new _modules[module]();
+    footerModule.init(data);
+    _footer = footerModule;
+  }
 }
 
 socket.on("connect", function() {
   clear();
-  addJoin("Name", "Room");
+  loadModules(["button", "text"], "init");
 });
 
 socket.on("rejected", function(msg) {
   clear();
   addJoin("Name", "Room");
-  addDisplayText(msg.text);
+  addText(msg.text);
 });
 
 socket.on("accepted", function(msg) {
   clear();
   setClientData(msg.name, msg.room);
   if (msg.text !== "") {
-    addDisplayText("Accepted into room");
+    addText("Accepted into room");
+  }
+});
+
+socket.on("loadModules", function(msg) {
+  if (!msg.callback) {
+    loadModules(msg.modules, "respond");
+  } else {
+    loadModules(msg.modules, msg.callback);
   }
 });
 
@@ -116,69 +164,32 @@ socket.on("clear", function(msg) {
   clear();
 });
 
-socket.on("addButton", function(msg) {
-  addButton(msg.text, msg.type, msg.value);
+socket.on("addModule", function(msg) {
+  addModule(msg.module, msg.data);
 });
 
-socket.on("text", function(msg) {
+socket.on("clearAndAddModule", function(msg) {
   clear();
-  if (msg.align) {
-    addDisplayTextAlign(msg.text, msg.align);
-  } else {
-    addDisplayText(msg.text);
+  addModule(msg.module, msg.data);
+});
+
+socket.on("addModules", function(msg) {
+  for (let i = 0; i < msg.modules.length; i++) {
+    addModule(msg.modules[i].module, msg.modules[i].data);
   }
 });
 
-socket.on("addText", function(msg) {
-  if (msg.align) {
-    addDisplayTextAlign(msg.text, msg.align);
-  } else {
-    addDisplayText(msg.text);
+socket.on("clearAndAddModules", function(msg) {
+  clear();
+  for (let i = 0; i < msg.modules.length; i++) {
+    addModule(msg.modules[i].module, msg.modules[i].data);
   }
 });
 
-socket.on("write", function(msg) {
-  clear();
-  addWrite(msg.text);
-});
-
-socket.on("footerWrite", function(msg) {
-  enableFooterWrite(msg.text);
-});
-
-socket.on("footerDisable", function(msg) {
+socket.on("disableFooter", function(msg) {
   disableFooter();
 });
 
-socket.on("displayCanvasAndWrite", function(msg) {
-  clear();
-  addDisplayCanvas(msg.paths);
-  addWrite("text");
-});
-
-socket.on("displayTextAndDraw", function(msg) {
-  clear();
-  addDisplayText(msg.text);
-  addDraw();
-});
-
-socket.on("button", function(msg) {
-  clear();
-  addButton(msg.text, msg.type, msg.value);
-});
-
-socket.on("test", function(msg) {
-  clear();
-  addDisplayText("text");
-  addDisplayTextAlign("left", "left");
-  addDisplayTextAlign("right", "right");
-  addWrite("text");
-  addButton("text", "clientData", "value");
-  addMultiButton(4, ["one", "two", "three", "four"], [1, 2, 3, 4]);
-  addMultiButton(2, ["none", "write"], ["none", "write"]);
-});
-
-socket.on("testDraw", function(msg) {
-  clear();
-  addDraw();
+socket.on("setFooter", function(msg) {
+  setFooter(msg.module, msg.data);
 });

@@ -1,12 +1,19 @@
 function Game() {
   this.clients = [];
+  this.clientModules = ["footerWrite"];
 
-  this.start = function(clients) {
+  this.init = function(clients) {
     this.clients = clients;
 
+    roomLoadModules(this.clientModules);
+  };
+
+  this.start = function() {
+
     clear();
-    emitToRoom("clear", {});
-    emitToRoom("footerWrite", {text: "chat"});
+
+    toRoom("clear", {});
+    toRoom("setFooter", {module: "footerWrite", data: {text: "chat"}});
   };
 
   this.next = function() {
@@ -19,9 +26,9 @@ function Game() {
     addDisplayText(str);
     for (let i = 0; i < this.clients.length; i++) {
       if (this.clients[i] === client) {
-        emitToClient(client, "addText", {text: data.text, align: "right"});
+        toClient(client, "addModule", {module: "text", data: {text: data.text, align: "right"}});
       } else {
-        emitToClient(this.clients[i], "addText", {text: str, align: "left"});
+        toClient(this.clients[i], "addModule", {module: "text", data: {text: str, align: "left"}});
       }
     }
   };
@@ -29,6 +36,6 @@ function Game() {
   this.join = function(name, id) {
     this.clients.push(name);
 
-    acceptClient(name, id, "footerWrite", {text: "chat"});
+    acceptClient(name, id, this.clientModules, "setFooter", {module: "footerWrite", data: {text: "chat"}});
   };
 }

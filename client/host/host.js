@@ -4,16 +4,24 @@ var room = null;
 var _content = [];
 var _game = null;
 
-function emitToRoom(command, data) {
+function toRoom(command, data) {
   socket.emit("toRoom", {command: command, data: data});
 }
 
-function emitToClient(client, command, data) {
+function toClient(client, command, data) {
   socket.emit("toClient", {client: client, command: command, data: data});
 }
 
-function acceptClient(name, id, command, data) {
-  socket.emit("acceptClient", {name: name, id: id, command: command, data: data});
+function roomLoadModules(modules) {
+  socket.emit("roomLoadModules", {modules: modules});
+}
+
+function clientLoadModules(client, modules) {
+  socket.emit("clientLoadModules", {client: client, modules: modules});
+}
+
+function acceptClient(name, id, modules, command, data) {
+  socket.emit("acceptClient", {name: name, id: id, modules: modules, command: command, data: data});
 }
 
 function rejectClient(id, text) {
@@ -103,8 +111,12 @@ socket.on("join", function(msg) {
   _game.join(msg.name, msg.id);
 });
 
-socket.on("start", function(msg) {
-  _game.start(msg.clients);
+socket.on("allReady", function(msg) {
+  _game.init(msg.clients);
+});
+
+socket.on("allLoaded", function(msg) {
+  _game.start();
 });
 
 socket.on("text", function(msg) {

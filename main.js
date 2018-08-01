@@ -23,7 +23,7 @@ var gamesArray = [
   {name: "testDraw", maxClients: 16}
 ];
 
-var rooms = {}; // {owner: id, game: "name", members: {name: id}, memberNames: {id: name}, hostReady: bool, ready: numberOfMembersWhoIsReady, gameStarted: bool};
+var rooms = {}; // {owner: id, game: "name", members: {name: id}, memberNames: {id: name}, hostReady: bool, ready: numberOfMembersWhoIsReady, loaded: numberOfMembersWhoHasLoadedMudules, gameStarted: bool};
 var roomOwners = {};
 var roomMembers = {}; //{id: room}
 
@@ -69,7 +69,7 @@ io.on("connection", function(socket) {
   console.log("new socket connection");
   socket.on("requestNewRoom", function(req) {
     let newRoomCode = generateRandomString(4);
-    rooms[newRoomCode] = {owner: socket.id, game: "", members: {}, memberNames: {}, hostReady: false, ready: 0, gameStarted: false};
+    rooms[newRoomCode] = {owner: socket.id, game: "", members: {}, memberNames: {}, hostReady: false, ready: 0, loaded: 0, gameStarted: false};
     roomOwners[socket.id] = newRoomCode;
     socket.emit("newRoom", {room: newRoomCode});
     console.log("New room: " + newRoomCode + ", owner: " + socket.id);
@@ -91,7 +91,7 @@ io.on("connection", function(socket) {
         socket.emit("accepted", {name: req.name, room: req.room, text: "Accepted into room"});
         io.sockets.to(rooms[req.room].owner).emit("newMember", {name: req.name});
         if (rooms[req.room].hostReady) {
-          socket.emit("addButton", {text: "ready", type: "ready", value: "ready"});
+          socket.emit("addModule", {module: "button", data: {type: "ready", value: "ready", text: "ready"}});
         }
       } else {
         console.log("Client tried to join room with: " + req.name + ", " + req.room);
@@ -111,7 +111,7 @@ io.on("connection", function(socket) {
     let roomCode = roomOwners[socket.id];
     rooms[roomCode].hostReady = true;
     console.log("Host of " + roomCode + " is ready");
-    io.sockets.to(roomCode).emit("addButton", {text: "ready", type: "ready", value: "ready"});
+    io.sockets.to(roomCode).emit("addModule", {module: "button", data: {type: "ready", value: "ready", text: "ready"}});
   });
   socket.on("toRoom", function(msg) {
     let roomCode = roomOwners[socket.id];
@@ -122,6 +122,22 @@ io.on("connection", function(socket) {
     let clientId = rooms[roomCode].members[msg.client];
     io.sockets.to(clientId).emit(msg.command, msg.data);
   });
+  socket.on("roomLoadModules", function(msg) {
+    let roomCode = roomOwners[socket.id];
+    io.sockets.to(roomCode).emit("loadModules", msg);
+  });
+  socket.on("clientLoadModules", function(msg) {
+    let roomCode = roomOwners[socket.id];
+    let clientId = rooms[roomCode].members[msg.client];
+    io.sockets.to(clientId).emit("loadModules", {modules: msg.modules});
+  });
+  socket.on("loaded", function(msg) {
+    let roomCode = roomMembers[socket.id];
+    rooms[roomCode].loaded++;
+    if (rooms[roomCode].loaded == Object.keys(rooms[roomCode].members).length) {
+      io.sockets.to(rooms[roomCode].owner).emit("allLoaded", {});
+    }
+  });
   socket.on("acceptClient", function(msg) {
     let roomCode = roomOwners[socket.id];
     rooms[roomCode].members[msg.name] = msg.id;
@@ -129,6 +145,7 @@ io.on("connection", function(socket) {
     roomMembers[msg.id] = roomCode;
     io.sockets.connected[msg.id].join(roomCode);
     io.sockets.to(msg.id).emit("accepted", {name: msg.name, room: roomCode, text: ""});
+    io.sockets.to(msg.id).emit("loadModules", {modules: msg.modules, callback: "none"});
     io.sockets.to(msg.id).emit(msg.command, msg.data);
   });
   socket.on("rejectClient", function(msg) {
@@ -138,14 +155,14 @@ io.on("connection", function(socket) {
     if (msg.type === "ready") {
       let roomCode = roomMembers[socket.id];
       rooms[roomCode].ready++;
-      socket.emit("text", {text: "ready"});
+      socket.emit("clearAndAddModule", {module: "text", data: {text: "ready"}});
       if (rooms[roomCode].ready == Object.keys(rooms[roomCode].members).length) {
-        io.sockets.to(rooms[roomCode].owner).emit("start", {clients: Object.keys(rooms[roomCode].members)});
+        io.sockets.to(rooms[roomCode].owner).emit("allReady", {clients: Object.keys(rooms[roomCode].members)});
         rooms[roomCode].gameStarted = true;
       }
     } else if (msg.type === "clientData") {
       let roomCode = roomMembers[socket.id];
-      io.sockets.to(rooms[roomCode].owner).emit("clientData", {client: rooms[roomCode].memberNames[socket.id], data: msg});
+      io.sockets.to(rooms[roomCode].owner).emit("clientData", {client: rooms[roomCode].memberNames[socket.id], data: {value: msg.value}});
     }
   });
   socket.on("clientData", function(msg) {

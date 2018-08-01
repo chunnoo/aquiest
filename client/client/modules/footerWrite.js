@@ -1,4 +1,4 @@
-function FooterWrite() {
+_modules["footerWrite"] = function() {
   this.form = document.createElement("form");
   this.form.id = "footerWriteForm";
 
@@ -19,12 +19,12 @@ function FooterWrite() {
   this.form.appendChild(this.sendButton);
   footer.appendChild(this.form);
 
-  this.init = function() {
-
+  this.init = function(data) {
+    this.input.placeholder = data.text;
   };
 
-  this.setPlaceholder = function(text) {
-    this.input.placeholder = text;
+  this.update = function(data) {
+    this.input.placeholder = data.text;
   };
 
   this.form.onsubmit = function(e) {
