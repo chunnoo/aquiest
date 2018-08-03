@@ -175,34 +175,6 @@ io.on("connection", function(socket) {
     io.sockets.to(rooms[roomCode].owner).emit("clientData", {client: rooms[roomCode].memberNames[socket.id], data: msg});
   });
 
-  socket.on("paths", function(msg) {
-    let roomCode = roomMembers[socket.id];
-    io.sockets.to(rooms[roomCode].owner).emit("clientData", {client: rooms[roomCode].memberNames[socket.id], data: msg});
-  });
-
-  //these are for testing
-  socket.on("testDisplayCanvas", function(msg) {
-    let resMsg = {
-      paths: [
-        {
-          pts:
-            [
-              {x: 0.25, y: 0.25},
-              {x: 0.75, y: 0.75}
-            ]
-        },
-        {
-          pts:
-            [
-              {x: 0.25, y: 0.75},
-              {x: 0.75, y: 0.25}
-            ]
-        }
-      ]
-    };
-    socket.emit("testDisplayCanvas", resMsg);
-  });
-
   //on disconnect remove room
 });
 

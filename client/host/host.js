@@ -139,26 +139,6 @@ function next() {
   _game.next();
 }
 
-/*function addDisplayText(msgText) {
-  let displayText = new DisplayText();
-  displayText.setText(msgText);
-  addToContent(displayText);
-}
-
-function addDisplayTextAlign(msgText, align) {
-  let displayText = new DisplayText();
-  displayText.setText(msgText);
-  displayText.setAlign(align);
-  addToContent(displayText);
-}
-
-function addDisplayCanvas(msgPaths) {
-  let displayCanvas = new DisplayCanvas();
-  displayCanvas.init();
-  displayCanvas.addPaths(msgPaths);
-  addToContent(displayCanvas);
-}*/
-
 socket.on("connect", function() {
   loadModulesWithCallback(["text"], "init");
 });
@@ -199,21 +179,6 @@ socket.on("allLoaded", function(msg) {
   }
 });
 
-/*socket.on("text", function(msg) {
-  clear();
-  addDisplayText(msg.text);
-});*/
-
 socket.on("clientData", function(msg) {
   _game.clientData(msg.client, msg.data);
 });
-
-/*socket.on("displayText", function(msg) {
-  clear();
-  addDisplayText(msg.text);
-});
-
-socket.on("displayCanvas", function(msg) {
-  clear();
-  addDisplayCanvas(msg.paths);
-});*/

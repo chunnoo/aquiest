@@ -47,7 +47,6 @@ function Game() {
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
-            //emitToClient(this.clients[i], "displayCanvasAndWrite", msg);
             toClient(this.clients[i], "clearAndAddModules", {
               modules: [
                 {module: "displayDraw", data: {paths: msg.paths, animationDelay: "0s"}},
@@ -61,7 +60,6 @@ function Game() {
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
-            //emitToClient(this.clients[i], "displayTextAndDraw", msg);
             toClient(this.clients[i], "clearAndAddModules", {
               modules: [
                 {module: "text", data: {text: msg.text, animationDelay: "0s"}},

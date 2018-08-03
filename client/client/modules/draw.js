@@ -164,7 +164,7 @@ _modules["draw"] = function() {
   }.bind(this);
 
   this.sendButton.onclick = function() {
-    socket.emit("paths", {paths: this.paths});
+    socket.emit("clientData", {paths: this.paths});
     this.paths = [];
     this.clear();
   }.bind(this);
