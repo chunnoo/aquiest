@@ -7,3 +7,5 @@ Make sure deletion really deletes things
 Typescript?
 
 Fix canvas size
+
+Stylesheets.onload(?)

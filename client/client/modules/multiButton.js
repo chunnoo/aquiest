@@ -43,7 +43,7 @@ _modules["multiButton"] = function(number) {
     this.buttons = [];
 
     let content = document.getElementById("content");
-    content.removeChild(this.mult);
+    content.removeChild(this.multi);
     this.multi = null;
   };
 }
