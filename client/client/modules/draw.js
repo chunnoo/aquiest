@@ -53,6 +53,9 @@ _modules["draw"] = function() {
 
   this.init = function(data) {
     this.resize();
+    if (data.animationDelay) {
+      this.canvas.style.animationDelay = data.animationDelay;
+    }
   };
 
   this.startDraw = function(point) {

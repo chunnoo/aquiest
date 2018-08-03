@@ -12,7 +12,7 @@ function GamesMenu() {
 
   };
 
-  this.addGame = function(game) {
+  this.addGame = function(game, animationDelay) {
     let newGame = {
       name: game.name,
       maxClients: game.maxClients,
@@ -21,6 +21,9 @@ function GamesMenu() {
     newGame.element.id = newGame.name;
     newGame.element.className = "menuGame";
     newGame.element.innerHTML = newGame.name;
+    if (animationDelay) {
+      newGame.element.style.animationDelay = animationDelay.toString() + "s";
+    }
     newGame.element.onclick = function() {
       socket.emit("requestGameScript", {name: this.name});
     }.bind(newGame);
@@ -30,7 +33,7 @@ function GamesMenu() {
 
   this.addGames = function(games) {
     for (let i = 0; i < games.length; i++) {
-      this.addGame(games[i]);
+      this.addGame(games[i], i * 0.1);
     }
   };
 

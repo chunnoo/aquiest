@@ -1,0 +1,41 @@
+#footerWriteForm {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#footerWriteInput {
+  width: calc(75% - 2em);
+  margin: 0.5em;
+  padding: 1em;
+  border: 0;
+  border-radius: 0.5em;
+  background-color: #ff6600;
+  color: #000000;
+  font-size: 1em;
+  font-family: monospace;
+}
+
+#footerWriteButton {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0.5em;
+  width: calc(25% - 2em);
+  padding: 1em;
+  margin: 0.5em;
+  background-color: #ff6600;
+  color: #000000;
+  font-size: 1em;
+  font-family: monospace;
+}
+
+#footerWriteButton:hover {
+  background-color: #ff8822;
+}
+
+#footerWriteButton:active {
+  background-color: #dd4400;
+  color: #000;
+}

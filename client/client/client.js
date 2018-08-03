@@ -7,6 +7,9 @@ var _pushingModules = false;
 var _loading = false;
 var _modules = {};
 
+var _loadingElement = new Loading();
+_loadingElement.init(true);
+
 var _content = [];
 var _footer = null;
 
@@ -36,6 +39,7 @@ function addJoin(firstPlaceholder, secondPlaceholder) {
 function loadModules(modules, callback) {
   _pushingModules = true;
   _loading = true;
+  _loadingElement.update(true);
   for (let i = 0; i < modules.length; i++) {
     let moduleScript = new ModuleScript(modules[i], callback);
     _moduleScripts.push(moduleScript);
@@ -76,6 +80,7 @@ function moduleLoaded(callback) {
         addJoin("Name", "Room");
       }
       _loading = false;
+      _loadingElement.update(false);
       addQueue();
     }
   }

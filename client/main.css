@@ -1,3 +1,25 @@
+@keyframes addContentFromSide {
+  from {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes addContentScale {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 html, body, head {
   background-color: #222;
   font-size: 1em;
@@ -158,4 +180,17 @@ input {
   margin: 1em;
   margin-left: auto;
   margin-right: auto;
+}
+
+.loading {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 6em);
+  padding-top: 6em;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  font-size: 4em;
+  display: block;
 }

@@ -10,6 +10,9 @@ _modules["text"] = function() {
     if (data.align) {
       this.text.style.textAlign = data.align;
     }
+    if (data.animationDelay) {
+      this.text.style.animationDelay = data.animationDelay;
+    }
   };
 
   this.update = function(data) {

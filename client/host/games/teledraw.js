@@ -48,8 +48,8 @@ function Game() {
             //emitToClient(this.clients[i], "displayCanvasAndWrite", msg);
             toClient(this.clients[i], "clearAndAddModules", {
               modules: [
-                {module: "displayDraw", data: {paths: msg.paths}},
-                {module: "write", data: {text: "write"}}
+                {module: "displayDraw", data: {paths: msg.paths, animationDelay: "0s"}},
+                {module: "write", data: {text: "write", animationDelay: "0s"}}
               ]
             });
           }
@@ -62,8 +62,8 @@ function Game() {
             //emitToClient(this.clients[i], "displayTextAndDraw", msg);
             toClient(this.clients[i], "clearAndAddModules", {
               modules: [
-                {module: "text", data: {text: msg.text}},
-                {module: "draw", data: {}}
+                {module: "text", data: {text: msg.text, animationDelay: "0s"}},
+                {module: "draw", data: {animationDelay: "0s"}}
               ]
             });
           }

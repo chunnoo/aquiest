@@ -24,6 +24,9 @@ _modules["multiButton"] = function(number) {
         socket.emit("button", {type: "clientData", value: this.value});
       }.bind(this.buttons[i]);
     }
+    if (data.animationDelay) {
+      this.multi.style.animationDelay = data.animationDelay;
+    }
   };
 
   this.update = function(data) {

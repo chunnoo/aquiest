@@ -1,3 +1,14 @@
+@keyframes addFooterFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 #wrapper {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -43,73 +54,20 @@
           justify-content: center;
 }
 
-#footerWriteForm {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+#content > * {
+  opacity: 0;
+  animation: addContentFromSide 0.5s ease;
+  animation-fill-mode: forwards;
 }
 
-#footerWriteInput {
-  width: calc(75% - 2em);
-  margin: 0.5em;
-  padding: 1em;
-  border: 0;
-  border-radius: 0.5em;
-  background-color: #ff6600;
-  color: #000000;
-  font-size: 1em;
-  font-family: monospace;
+#footer > * {
+  opacity: 0;
+  animation: addFooterFromBottom 0.5s ease;
+  animation-fill-mode: forwards;
 }
 
-#footerWriteButton {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  margin: 0;
-  border: 0;
-  border-radius: 0.5em;
-  width: calc(25% - 2em);
-  padding: 1em;
-  margin: 0.5em;
-  background-color: #ff6600;
-  color: #000000;
-  font-size: 1em;
-  font-family: monospace;
-}
-
-#footerWriteButton:hover {
-  background-color: #ff8822;
-}
-
-#footerWriteButton:active {
-  background-color: #dd4400;
-  color: #000;
-}
-
-.multiButtonDiv {
-  width: 100%;
-  margin: 0;
-  padding: 0.5em;
-
-    display: -webkit-box;
-    display: -ms-flexbox;
-  display: flex;
-
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
-  flex-direction: row;
-
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-  justify-content: center;
-}
-
-.multiButton {
-  width: auto;
-
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
-  flex-grow: 1;
-
-  margin: 0.5;
+#canvas {
+  opacity: 0;
+  animation: addContentScale 0.5s ease;
+  animation-fill-mode: forwards;
 }

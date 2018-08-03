@@ -17,6 +17,9 @@ _modules["button"] = function() {
     }
     this.value = data.value;
     this.button.innerHTML = data.text;
+    if (data.animationDelay) {
+      this.button.style.animationDelay = data.animationDelay;
+    }
   };
 
   this.update = function(data) {

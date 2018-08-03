@@ -21,6 +21,9 @@ _modules["footerWrite"] = function() {
 
   this.init = function(data) {
     this.input.placeholder = data.text;
+    if (data.animationDelay) {
+      this.form.style.animationDelay = data.animationDelay;
+    }
   };
 
   this.update = function(data) {

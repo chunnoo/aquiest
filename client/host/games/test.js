@@ -3,13 +3,13 @@ function Game() {
   this.clientModules = ["write", "multiButton", "footerWrite"];
   this.clientContent = {
       modules: [
-        {module: "text", data: {text: "text"}},
-        {module: "text", data: {text: "left", align: "left"}},
-        {module: "text", data: {text: "right", align: "right"}},
-        {module: "write", data: {text: "text"}},
-        {module: "button", data: {value: "value", text: "text"}},
-        {module: "multiButton", data: {values: [1, 2, 3, 4], texts: ["one", "two", "three", "four"]}},
-        {module: "multiButton", data: {values: ["none", "write"], texts: ["none", "write"]}}
+        {module: "text", data: {text: "text", animationDelay: "0s"}},
+        {module: "text", data: {text: "left", align: "left", animationDelay: "0.1s"}},
+        {module: "text", data: {text: "right", align: "right", animationDelay: "0.2s"}},
+        {module: "write", data: {text: "text", animationDelay: "0.3s"}},
+        {module: "button", data: {value: "value", text: "text", animationDelay: "0.4s"}},
+        {module: "multiButton", data: {values: [1, 2, 3, 4], texts: ["one", "two", "three", "four"], animationDelay: "0.5s"}},
+        {module: "multiButton", data: {values: ["none", "write"], texts: ["none", "write"], animationDelay: "0.6s"}}
       ]
     };
 
@@ -32,9 +32,9 @@ function Game() {
 
   this.clientData = function(client, data) {
     addDisplayText(client + ": " + JSON.stringify(data));
-    if (data.type === "clientData" && data.value === "write") {
+    if (data.value === "write") {
       toClient(client, "setFooter", {module: "footerWrite", data: {text: "write"}});
-    } else if (data.type === "clientData" && data.value === "none") {
+    } else if (data.value === "none") {
       toClient(client, "disableFooter", {});
     }
   };
