@@ -21,7 +21,7 @@ function Game() {
 
   this.start = function() {
     clear();
-    addDisplayText(JSON.stringify(this.clients));
+    addModule("text", {text: JSON.stringify(this.clients)});
 
     toRoom("clearAndAddModules", this.clientContent);
   };
@@ -31,7 +31,7 @@ function Game() {
   };
 
   this.clientData = function(client, data) {
-    addDisplayText(client + ": " + JSON.stringify(data));
+    addModule("text", {text: client + ": " + JSON.stringify(data)});
     if (data.value === "write") {
       toClient(client, "setFooter", {module: "footerWrite", data: {text: "write"}});
     } else if (data.value === "none") {
@@ -40,7 +40,7 @@ function Game() {
   };
 
   this.join = function(name, id) {
-    addDisplayText(name + ": " + id);
+    addModule("text", {text: name + ": " + id});
     this.clients.push(name);
     acceptClient(name, id, this.clientModules, "clearAndAddModules", this.clientContent);
   };

@@ -23,7 +23,7 @@ function Game() {
   this.clientData = function(client, data) {
     let str = client + ": " + data.text;
 
-    addDisplayText(str);
+    addModule("text", {text: str});
     for (let i = 0; i < this.clients.length; i++) {
       if (this.clients[i] === client) {
         toClient(client, "addModule", {module: "text", data: {text: data.text, align: "right"}});

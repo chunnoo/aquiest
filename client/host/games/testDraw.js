@@ -5,12 +5,14 @@ function Game() {
   this.init = function(clients) {
     this.clients = clients;
 
+    loadModules(["point", "path", "displayDraw"]);
+
     roomLoadModules(this.clientModules);
   };
 
   this.start = function() {
     clear();
-    addDisplayText(JSON.stringify(this.clients));
+    addModule("text", {text: JSON.stringify(this.clients)});
 
     toRoom("clearAndAddModule", {module: "draw", data: {}});
   };
@@ -22,7 +24,7 @@ function Game() {
   this.clientData = function(client, data) {
     clear();
     //addDisplayText(client + ":");
-    addDisplayCanvas(data.paths);
+    addModule("displayDraw", {paths: data.paths});
   };
 
   this.join = function(name, id) {

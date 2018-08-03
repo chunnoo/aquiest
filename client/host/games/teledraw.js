@@ -14,6 +14,8 @@ function Game() {
     this.round = 0;
     this.received = 0;
 
+    loadModules(["point", "path", "displayDraw"]);
+
     roomLoadModules(["point", "path", "draw", "write", "displayDraw"]);
   }
 
@@ -23,7 +25,7 @@ function Game() {
     console.dir(this.data);
 
     clear();
-    addDisplayText("Write Something");
+    addModule("text", {text: "Write Something"});
 
     toRoom("clearAndAddModule", {module: "write", data: {text: "Type something"}});
   };
@@ -41,7 +43,7 @@ function Game() {
       } else {
         if (this.round % 2 == 0) {
           clear();
-          addDisplayText("Write what you see");
+          addModule("text", {text: "Write what you see"});
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
@@ -55,7 +57,7 @@ function Game() {
           }
         } else if (this.round % 2 == 1) {
           clear();
-          addDisplayText("Draw your word");
+          addModule("text", {text: "Draw your word"});
 
           for (let i = 0; i < this.clients.length; i++) {
             let msg = this.data[this.clients[(i + this.clients.length - 1) % this.clients.length]][this.round - 1];
@@ -77,15 +79,15 @@ function Game() {
       if (this.round == this.clients.length * this.clients.length) {
         toRoom("clearAndAddModule", {module: "text", data: {text: "Game finished"}});
         clear();
-        addDisplayText("Game finished");
+        addModule("text", {text: "Game finished"});
       } else if ((this.round % this.clients.length) % 2 == 0) {
         let data = this.data[this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]][this.round % this.clients.length];
         clear();
-        addDisplayText(data.text);
+        addModule("text", {text: data.text});
       } else if ((this.round % this.clients.length) % 2 == 1) {
         let data = this.data[this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]][this.round % this.clients.length];
         clear();
-        addDisplayCanvas(data.paths);
+        addModule("displayDraw", {paths: data.paths});
       }
       this.round++;
     }
