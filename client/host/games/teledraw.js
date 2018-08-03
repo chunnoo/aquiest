@@ -14,16 +14,12 @@ function Game() {
     this.round = 0;
     this.received = 0;
 
-    loadModules(["point", "path", "displayDraw"]);
+    loadModules(["point", "path", "displayDraw", "clientList"]);
 
     roomLoadModules(["point", "path", "draw", "write", "displayDraw"]);
   }
 
   this.start = function() {
-    console.log("TeledrawStart");
-    console.log(this.clients);
-    console.dir(this.data);
-
     clear();
     addModule("text", {text: "Write Something"});
 
@@ -82,10 +78,12 @@ function Game() {
         let data = this.data[this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]][this.round % this.clients.length];
         clear();
         addModule("text", {text: data.text});
+        addModule("clientList", {clients: this.clients, highlight: this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]});
       } else if ((this.round % this.clients.length) % 2 == 1) {
         let data = this.data[this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]][this.round % this.clients.length];
         clear();
         addModule("displayDraw", {paths: data.paths});
+        addModule("clientList", {clients: this.clients, highlight: this.clients[(this.round + Math.floor(this.round / this.clients.length)) % this.clients.length]});
       }
       this.round++;
     }
@@ -93,10 +91,6 @@ function Game() {
 
   this.clientData = function(client, data) {
     if (!this.finished) {
-      console.log("TeledrawClientData");
-      console.dir(this.clients);
-      console.dir(this.data);
-
       this.received++;
 
       this.data[client].push(data);

@@ -1,0 +1,19 @@
+.clientList {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  width: 100%;
+  height: calc(100% - 10em);
+  padding-top: 1em;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  grid-area: left;
+  align-items: left;
+}

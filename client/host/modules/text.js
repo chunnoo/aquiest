@@ -1,6 +1,6 @@
 _modules["text"] = function() {
   this.text = document.createElement("p");
-  this.text.id = "text";
+  this.text.className = "text";
 
   let content = document.getElementById("content");
   content.appendChild(this.text);

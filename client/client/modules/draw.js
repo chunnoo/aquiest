@@ -37,7 +37,7 @@ _modules["draw"] = function() {
 
   this.resize = function() {
     let style = window.getComputedStyle(this.canvas, null);
-    this.canvas.style.height = style.width;
+    //this.canvas.style.height = style.width;
     this.canvas.width = parseInt(style.width);
     this.canvas.height = parseInt(style.height);
 

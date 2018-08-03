@@ -6,6 +6,9 @@ var _pushingModules = false;
 var _loading = false;
 var _modules = {};
 
+var _gamesMenu = null;
+var _menuClientList = null;
+
 var _loadingElement = new Loading();
 _loadingElement.init(true);
 
@@ -25,6 +28,11 @@ function loadModulesWithCallback(modules, callback) {
     _moduleScripts.push(moduleScript);
   }
   _pushingModules = false;
+}
+
+function pushContentQueue(next) {
+  _contentQueue.push(next);
+  return _content.length + _contentQueue.length - 1;
 }
 
 function addQueue() {
@@ -92,6 +100,7 @@ function addToContent(element) {
   _content.push(element);
   let content = document.getElementById("content");
   content.scrollTop = content.scrollHeight;
+  return _content.length - 1;
 }
 
 function clear() {
@@ -104,11 +113,11 @@ function clear() {
 function addModule(name, data) {
   if (_loading) {
     let next = {name: name, data: data};
-    _contentQueue.push(next);
+    return pushContentQueue(next);
   } else {
     let newModule = new _modules[name]();
     newModule.init(data);
-    addToContent(newModule);
+    return addToContent(newModule);
   }
 }
 
@@ -118,11 +127,15 @@ function addModules(modules) {
   }
 }
 
+function updateModule(contentIndex, data) {
+  _content[contentIndex].update(data);
+}
+
 function addGamesMenu(games) {
   let gamesMenu = new GamesMenu();
   gamesMenu.init();
   gamesMenu.addGames(games);
-  addToContent(gamesMenu);
+  _gamesMenu = gamesMenu;
 }
 
 function addGameScript(game) {
@@ -147,6 +160,9 @@ socket.on("newRoom", function(msg) {
   room = msg.room;
   document.getElementById("headerInfo").innerHTML = room;
 
+  _menuClientList = new MenuClientList();
+  _menuClientList.init({});
+
   socket.emit("requestGames", {});
 });
 
@@ -157,11 +173,14 @@ socket.on("games", function(msg) {
 
 socket.on("gameScript", function(msg) {
   clear();
+  _gamesMenu.delete();
+  _gamesMenu = null;
+  _menuClientList.update({state: "center"});
   addGameScript(msg.game);
 });
 
 socket.on("newMember", function(msg) {
-  addModule("text", {text: msg.name});
+  _menuClientList.update({client: msg.name});
 });
 
 socket.on("join", function(msg) {
@@ -169,6 +188,8 @@ socket.on("join", function(msg) {
 });
 
 socket.on("allReady", function(msg) {
+  _menuClientList.delete();
+  _menuClientList = null;
   _game.init(msg.clients);
 });
 

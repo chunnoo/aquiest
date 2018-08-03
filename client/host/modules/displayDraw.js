@@ -1,6 +1,7 @@
 _modules["displayDraw"] = function() {
   this.canvas = document.createElement("canvas");
   this.canvas.id = "canvas";
+  this.canvas.className = "displayDraw";
 
   let content = document.getElementById("content");
   content.appendChild(this.canvas);
@@ -31,7 +32,6 @@ _modules["displayDraw"] = function() {
 
   this.resize = function() {
     let style = window.getComputedStyle(this.canvas, null);
-    this.canvas.style.height = style.width;
     this.canvas.width = parseInt(style.width);
     this.canvas.height = parseInt(style.height);
 

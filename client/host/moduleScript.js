@@ -13,13 +13,13 @@ function ModuleScript(module, callback) {
   }.bind(this);
 
   let scripts = document.getElementById("scripts");
-  this.script.src = "/client/modules/" + this.module + ".js";
+  this.script.src = "/host/modules/" + this.module + ".js";
   scripts.appendChild(this.script);
 
   let head = document.getElementsByTagName("head")[0];
   this.style.setAttribute("rel", "stylesheet");
   this.style.setAttribute("type", "text/css");
-  this.style.setAttribute("href", "/client/modules/styles/" + this.module + ".css");
+  this.style.setAttribute("href", "/host/modules/styles/" + this.module + ".css");
   head.appendChild(this.style);
 
 

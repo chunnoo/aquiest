@@ -13,15 +13,22 @@ function Game() {
       ]
     };
 
+  this.clientList = null;
+  this.text = null;
+
   this.init = function(clients) {
     this.clients = clients;
+
+    loadModules(["clientList", "multilineText"]);
 
     roomLoadModules(this.clientModules);
   };
 
   this.start = function() {
     clear();
-    addModule("text", {text: JSON.stringify(this.clients)});
+
+    this.clientList = addModule("clientList", {clients: this.clients});
+    this.text = addModule("multilineText", {text: JSON.stringify(this.clients)});
 
     toRoom("clearAndAddModules", this.clientContent);
   };
@@ -31,7 +38,9 @@ function Game() {
   };
 
   this.clientData = function(client, data) {
-    addModule("text", {text: client + ": " + JSON.stringify(data)});
+    updateModule(this.text, {text: client + ": " + JSON.stringify(data)});
+    updateModule(this.clientList, {highlight: client});
+    //addModule("text", {text: client + ": " + JSON.stringify(data)});
     if (data.value === "write") {
       toClient(client, "setFooter", {module: "footerWrite", data: {text: "write"}});
     } else if (data.value === "none") {
@@ -40,8 +49,11 @@ function Game() {
   };
 
   this.join = function(name, id) {
-    addModule("text", {text: name + ": " + id});
+    updateModule(this.text, {text: name + ": " + id});
+    //addModule("text", {text: name + ": " + id});
     this.clients.push(name);
     acceptClient(name, id, this.clientModules, "clearAndAddModules", this.clientContent);
+
+    updateModule(this.clientList, {client: name});
   };
 }

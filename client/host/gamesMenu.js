@@ -25,6 +25,7 @@ function GamesMenu() {
       newGame.element.style.animationDelay = animationDelay.toString() + "s";
     }
     newGame.element.onclick = function() {
+      document.getElementById("headerText").innerHTML = this.name;
       socket.emit("requestGameScript", {name: this.name});
     }.bind(newGame);
     this.menu.appendChild(newGame.element);

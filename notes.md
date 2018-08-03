@@ -9,3 +9,5 @@ Typescript?
 Fix canvas size
 
 Stylesheets.onload(?)
+
+put point.js and path.js into source of modules(?)

@@ -50,14 +50,6 @@ app.get("/client/client", function(req, res) {
   res.sendFile(path.join(__dirname + "/client/client/client.html"));
 });
 
-//these are just for testing and can be removed in production
-app.get("/scripts/clientTest", function(req, res) {
-  res.sendFile(path.join(__dirname + "/client/scripts/clientTest.html"));
-});
-app.get("/scripts/hostTest", function(req, res) {
-  res.sendFile(path.join(__dirname + "/client/scripts/hostTest.html"));
-});
-
 app.get("/*.css", function(req, res) {
   res.sendFile(path.join(__dirname + "/client/" + url.parse(req.url, true).pathname));
 });
