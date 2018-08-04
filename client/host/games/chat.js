@@ -2,8 +2,12 @@ function Game() {
   this.clients = [];
   this.clientModules = ["footerWrite"];
 
+  this.text = null;
+
   this.init = function(clients) {
     this.clients = clients;
+
+    loadModules(["multilineText"]);
 
     roomLoadModules(this.clientModules);
   };
@@ -11,6 +15,8 @@ function Game() {
   this.start = function() {
 
     clear();
+
+    this.text = addModule("multilineText", {});
 
     toRoom("clear", {});
     toRoom("setFooter", {module: "footerWrite", data: {text: "chat"}});
@@ -23,7 +29,7 @@ function Game() {
   this.clientData = function(client, data) {
     let str = client + ": " + data.text;
 
-    addModule("text", {text: str});
+    updateModule(this.text, {text: str});
     for (let i = 0; i < this.clients.length; i++) {
       if (this.clients[i] === client) {
         toClient(client, "addModule", {module: "text", data: {text: data.text, align: "right"}});

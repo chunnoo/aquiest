@@ -36,6 +36,7 @@ _modules["multilineText"] = function() {
         this.div.appendChild(newLine);
       }
     }
+    this.div.scrollTop = this.div.scrollHeight;
   };
 
   this.delete = function() {

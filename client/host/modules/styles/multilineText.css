@@ -10,9 +10,9 @@
       -ms-flex-pack: start;
           justify-content: flex-start;
   width: 100%;
-  height: calc(100% - 10em);
+  max-height: calc(100% - 2em);
   padding-top: 1em;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: hidden;
   grid-area: center;
 }

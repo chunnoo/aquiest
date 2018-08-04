@@ -12,9 +12,11 @@ _loadingElement.init(true);
 
 var _content = [];
 var _footer = null;
+var _headerCenter = null;
 
 var _contentQueue = [];
 var _footerQueue = null;
+var _headerCenterQueue = null;
 
 function addToContent(element) {
   _content.push(element);
@@ -33,6 +35,18 @@ function addJoin(firstPlaceholder, secondPlaceholder) {
   let join = new Join();
   join.init();
   join.setPlaceholders(firstPlaceholder, secondPlaceholder);
+  let formData = window.location.href.split("?");
+  if (formData[1]) {
+    let paramStrings = formData[1].split("&");
+    let params = {};
+    for (let i = 0; i < paramStrings.length; i++) {
+      let param = paramStrings[i].split("=");
+      if (param[0] && param[1]) {
+        params[param[0]] = param[1];
+      }
+    }
+    join.update(params);
+  }
   addToContent(join);
 }
 
@@ -64,7 +78,15 @@ function addQueue() {
       setFooter(_footerQueue.module, _footerQueue.data);
     }
   }
-  _footerQueue = null;
+  _headerCenterQueue = null;
+  if (_headerCenterQueue !== null) {
+    if (_headerCenterQueue === "none") {
+      disableHeader();
+    } else {
+      setHeader(_headerCenterQueue.module, _headerCenterQueue.data);
+    }
+  }
+  _headerCenterQueue = null;
 }
 
 function moduleLoaded(callback) {
@@ -138,6 +160,32 @@ function setFooter(module, data) {
   }
 }
 
+function disableHeader() {
+  if (_loading) {
+    _headerCenterQueue = "none";
+  } else {
+    if (_headerCenter) {
+      _headerCenter.delete();
+      _headerCenter = null;
+    }
+  }
+}
+
+function setHeader(module, data) {
+  if (_loading) {
+    _headerCenterQueue = {module: module, data: data};
+  } else {
+    disableHeader();
+    let headerModule = new _modules[module]();
+    headerModule.init(data);
+    _headerCenter = headerModule;
+  }
+}
+
+function headerCallback() {
+  disableHeader();
+}
+
 socket.on("connect", function() {
   clear();
   loadModules(["button", "text"], "init");
@@ -198,3 +246,19 @@ socket.on("disableFooter", function(msg) {
 socket.on("setFooter", function(msg) {
   setFooter(msg.module, msg.data);
 });
+
+socket.on("disableHeader", function(msg) {
+  disableHeader();
+});
+
+socket.on("setHeader", function(msg) {
+  setHeader(msg.module, msg.data);
+});
+
+window.onresize = function(e) {
+  for (let i = 0; i < _content.length; i++) {
+    if (_content[i].resize) {
+      _content[i].resize();
+    }
+  }
+}

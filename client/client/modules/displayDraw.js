@@ -69,10 +69,6 @@ _modules["displayDraw"] = function() {
     this.addPaths(data.paths);
   }
 
-  this.canvas.onresize = function(e) {
-    this.resize();
-  }.bind(this);
-
   this.delete = function() {
     let content = document.getElementById("content");
     content.removeChild(this.canvas);

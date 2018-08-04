@@ -169,10 +169,6 @@ _modules["draw"] = function() {
     this.clear();
   }.bind(this);
 
-  this.canvas.onresize = function(e) {
-    this.resize();
-  }.bind(this);
-
   this.update = function(data) {
 
   };

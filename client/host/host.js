@@ -13,11 +13,13 @@ var _loadingElement = new Loading();
 _loadingElement.init(true);
 
 var _content = [];
+var _headerCenter = null;
 var _game = null;
 
 var _clientsLoaded = false;
 
 var _contentQueue = [];
+var _headerCenterQueue = null;
 
 function loadModulesWithCallback(modules, callback) {
   _pushingModules = true;
@@ -45,6 +47,15 @@ function addQueue() {
       addModule(next.name, next.data);
     }
   }
+  _headerCenterQueue = null;
+  if (_headerCenterQueue !== null) {
+    if (_headerCenterQueue === "none") {
+      disableHeader();
+    } else {
+      setHeader(_headerCenterQueue.module, _headerCenterQueue.data);
+    }
+  }
+  _headerCenterQueue = null;
 }
 
 function moduleLoaded(callback) {
@@ -129,6 +140,43 @@ function addModules(modules) {
 
 function updateModule(contentIndex, data) {
   _content[contentIndex].update(data);
+}
+
+function disableHeader() {
+  if (_loading) {
+    _headerCenterQueue = "none";
+  } else {
+    if (_headerCenter) {
+      _headerCenter.delete();
+      _headerCenter = null;
+    }
+  }
+}
+
+function setHeader(module, data) {
+  if (_loading) {
+    _headerCenterQueue = {module: module, data: data};
+  } else {
+    disableHeader();
+    let headerModule = new _modules[module]();
+    headerModule.init(data);
+    _headerCenter = headerModule;
+  }
+}
+
+function updateHeader(data) {
+  if (_headerCenter !== null) {
+    _headerCenter.update(data);
+  }
+}
+
+function headerIsSet() {
+  return (_headerCenter !== null);
+}
+
+function headerCallback() {
+  disableHeader();
+  next();
 }
 
 function addGamesMenu(games) {

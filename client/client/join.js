@@ -39,6 +39,15 @@ function Join() {
     this.second.placeholder = second;
   };
 
+  this.update = function(data) {
+    if (data.name) {
+      this.first.value = data.name;
+    }
+    if (data.room) {
+      this.second.value = data.room;
+    }
+  }
+
   this.clear = function() {
     this.first.value = "";
     this.second.value = "";
@@ -51,6 +60,7 @@ function Join() {
   this.form.onsubmit = function(e) {
     e.preventDefault();
     socket.emit("join", {name: this.first.value, room: this.second.value});
+    window.history.pushState({name: this.first.value, room: this.second.value}, "joined", "?name=" + this.first.value + "&room=" + this.second.value);
     this.first.value = "";
     this.second.value = "";
   }.bind(this);
