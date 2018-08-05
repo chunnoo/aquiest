@@ -17,10 +17,12 @@ var io = require('socket.io')(server);
 
 var gamesArray = [
   {name: "teledraw", maxClients: 16},
-  {name: "chat", maxClients: 16},
   {name: "pictionary", maxClients: 16},
+  {name: "speedType", maxClients: 16},
+  {name: "chat", maxClients: 16},
   {name: "test", maxClients: 16},
-  {name: "testDraw", maxClients: 16}
+  {name: "testDraw", maxClients: 16},
+  {name: "testLiveDraw", maxClients: 16}
 ];
 
 var rooms = {}; // {owner: id, game: "name", members: {name: id}, memberNames: {id: name}, hostReady: bool, ready: numberOfMembersWhoIsReady, loaded: numberOfMembersWhoHasLoadedMudules, gameStarted: bool};
@@ -98,6 +100,11 @@ io.on("connection", function(socket) {
     console.log("Host of " + roomOwners[socket.id] + " requested game script " + req.name);
     rooms[roomOwners[socket.id]].game = req.name;
     socket.emit("gameScript", {game: req.name});
+  });
+  socket.on("requestDictionary", function(req) {
+    let dictFile = fs.readFileSync(__dirname + "/client/host/dictionaries/" + req.dictionary + ".json");
+    let dictJson = JSON.parse(dictFile);
+    socket.emit("dictionary", dictJson);
   });
   socket.on("hostReady", function(msg) {
     let roomCode = roomOwners[socket.id];

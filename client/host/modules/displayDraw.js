@@ -17,17 +17,18 @@ _modules["displayDraw"] = function() {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   };
 
-  this.drawPath = function(index) {
-    let path = this.paths[index].getPointArray();
+  this.drawPath = function(pathIndex, pointIndex) {
+    let path = this.paths[pathIndex].getPointArray();
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(path[0].x, path[0].y);
-    for (let i = 0; i < path.length; i++) {
-      this.ctx.lineTo(path[i].x, path[i].y);
+    if (pointIndex < path.length - 3) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(path[pointIndex].x, path[pointIndex].y);
+      this.ctx.lineTo(path[pointIndex + 1].x, path[pointIndex + 1].y);
+      this.ctx.stroke();
+      requestAnimationFrame(function() {
+        this.drawPath(pathIndex, pointIndex + 1);
+      }.bind(this));
     }
-    this.ctx.lineWidth = this.strokeSize/this.canvas.width;
-    this.ctx.strokeStyle = this.strokeColor;
-    this.ctx.stroke();
   };
 
   this.resize = function() {
@@ -41,14 +42,16 @@ _modules["displayDraw"] = function() {
     this.ctx.scale(this.canvas.width, this.canvas.height);
 
     for (let i = 0; i < this.paths.length; i++) {
-      this.drawPath(i);
+      this.drawPath(i, 0);
     }
   };
 
   this.addPath = function(path) {
     Object.setPrototypeOf(path, Path.prototype);
     this.paths.push(path);
-    this.drawPath(this.paths.length - 1);
+    this.ctx.lineWidth = this.strokeSize/this.canvas.width;
+    this.ctx.strokeStyle = this.strokeColor;
+    this.drawPath(this.paths.length - 1, 0);
   };
 
   this.addPaths = function(paths) {
@@ -59,14 +62,21 @@ _modules["displayDraw"] = function() {
 
   this.init = function(data) {
     this.resize();
-    this.addPaths(data.paths);
+    if (data.paths) {
+      this.addPaths(data.paths);
+    }
     if (data.animationDelay) {
       this.canvas.style.animationDelay = data.animationDelay;
     }
   };
 
   this.update = function(data) {
-    this.addPaths(data.paths);
+    if (data.paths) {
+      this.addPaths(data.paths);
+    }
+    if (data.path) {
+      this.addPath(data.path);
+    }
   }
 
   this.canvas.onresize = function(e) {

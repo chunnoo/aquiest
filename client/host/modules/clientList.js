@@ -11,7 +11,7 @@ _modules["clientList"] = function() {
   content.appendChild(this.div);
 
   this.init = function(data) {
-    if (data.client || data.clients || data.position || data.highlight) {
+    if (data.client || data.clients || data.position || data.highlight || data.clientData) {
       this.update(data);
     }
   };
@@ -33,8 +33,14 @@ _modules["clientList"] = function() {
         this.div.appendChild(newClient.element);
       }
     }
+    if (data.clientData) {
+     for (let i = 0; i < this.clients.length; i++) {
+       this.clients[i].element.innerHTML += ": " + data.clientData[i];
+     }
+    }
     if (data.position) {
       this.position = data.position;
+      this.div.style.alignItems = this.position;
       this.div.style.gridArea = this.position;
     }
     if (data.highlight) {

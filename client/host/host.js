@@ -15,15 +15,27 @@ _loadingElement.init(true);
 var _content = [];
 var _headerCenter = null;
 var _game = null;
+var _dictionary = null;
 
 var _clientsLoaded = false;
+var _loadingModules = false;
+var _loadingDictionaries = false;
 
 var _contentQueue = [];
 var _headerCenterQueue = null;
 
+function doneLoading() {
+  if (!_loadingModules && !_loadingDictionaries) {
+    _loading = false;
+    _loadingElement.update(false);
+    addQueue();
+  }
+}
+
 function loadModulesWithCallback(modules, callback) {
   _pushingModules = true;
   _loading = true;
+  _loadingModules = true;
   _loadingElement.update(true);
   for (let i = 0; i < modules.length; i++) {
     let moduleScript = new ModuleScript(modules[i], callback);
@@ -72,9 +84,8 @@ function moduleLoaded(callback) {
       } else if (callback === "init") {
         socket.emit("requestNewRoom", {});
       }
-      _loading = false;
-      _loadingElement.update(false);
-      addQueue();
+      _loadingModules = false;
+      doneLoading();
     }
   }
 }
@@ -142,6 +153,16 @@ function updateModule(contentIndex, data) {
   _content[contentIndex].update(data);
 }
 
+function loadDictionary(dictionary) {
+  socket.emit("requestDictionary", {dictionary: dictionary});
+  _loading = true;
+  _loadingDictionaries = true;
+}
+
+function getRandomDictionaryWord() {
+  return _dictionary.words[Math.floor(Math.random() * _dictionary.words.length)];
+}
+
 function disableHeader() {
   if (_loading) {
     _headerCenterQueue = "none";
@@ -167,6 +188,14 @@ function setHeader(module, data) {
 function updateHeader(data) {
   if (_headerCenter !== null) {
     _headerCenter.update(data);
+  }
+}
+
+function getHeaderData() {
+  if (_headerCenter.getData) {
+    return _headerCenter.getData();
+  } else {
+    return {};
   }
 }
 
@@ -233,6 +262,12 @@ socket.on("newMember", function(msg) {
 
 socket.on("join", function(msg) {
   _game.join(msg.name, msg.id);
+});
+
+socket.on("dictionary", function(msg) {
+  _dictionary = msg;
+  _loadingDictionaries = false;
+  doneLoading();
 });
 
 socket.on("allReady", function(msg) {

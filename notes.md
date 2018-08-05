@@ -1,5 +1,3 @@
-Add resize function to every content type. Then a `window.onresize` call can call every resize function in the content array.
-
 Do things on disconnect
 
 Make sure deletion really deletes things
@@ -11,3 +9,5 @@ Fix canvas size
 Stylesheets.onload(?)
 
 put point.js and path.js into source of modules(?)
+
+forceSend on timerEnd

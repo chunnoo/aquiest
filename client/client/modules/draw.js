@@ -5,6 +5,8 @@ _modules["draw"] = function() {
   this.sendButton.id = "send";
   this.sendButton.innerHTML = "Send";
 
+  this.live = false;
+
   let content = document.getElementById("content");
   content.appendChild(this.canvas);
   content.appendChild(this.sendButton);
@@ -56,6 +58,10 @@ _modules["draw"] = function() {
     if (data.animationDelay) {
       this.canvas.style.animationDelay = data.animationDelay;
     }
+    if (data.live && data.live === true) {
+      this.live = true;
+      this.sendButton.style.display = "none";
+    }
   };
 
   this.startDraw = function(point) {
@@ -78,6 +84,9 @@ _modules["draw"] = function() {
   this.endDraw = function(point) {
     this.paths[this.paths.length - 1].addPoint(point);
     this.paths[this.paths.length - 1].simplify();
+    if (this.live) {
+      socket.emit("clientData", {path: this.paths[this.paths.length - 1]});
+    }
     //drawPath(paths.length - 1);
   };
 

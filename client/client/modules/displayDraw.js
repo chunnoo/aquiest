@@ -59,14 +59,21 @@ _modules["displayDraw"] = function() {
 
   this.init = function(data) {
     this.resize();
-    this.addPaths(data.paths);
+    if (data.paths) {
+      this.addPaths(data.paths);
+    }
     if (data.animationDelay) {
       this.canvas.style.animationDelay = data.animationDelay;
     }
   };
 
   this.update = function(data) {
-    this.addPaths(data.paths);
+    if (data.paths) {
+      this.addPaths(data.paths);
+    }
+    if (data.path) {
+      this.addPath(data.path);
+    }
   }
 
   this.delete = function() {

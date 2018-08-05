@@ -42,6 +42,10 @@ _modules["headerTimer"] = function() {
     }
   };
 
+  this.getData = function() {
+    return {time: this.time};
+  }
+
   this.delete = function() {
     let headerCenter = document.getElementById("headerCenter");
     headerCenter.removeChild(this.timer);
