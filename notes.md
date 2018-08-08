@@ -11,3 +11,7 @@ Stylesheets.onload(?)
 put point.js and path.js into source of modules(?)
 
 forceSend on timerEnd
+
+dictionaries should use a serverside database instead of beeing loaded into host memory
+
+make sure animations are supported

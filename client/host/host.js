@@ -21,8 +21,14 @@ var _clientsLoaded = false;
 var _loadingModules = false;
 var _loadingDictionaries = false;
 
+var _actionQueue = [];
 var _contentQueue = [];
 var _headerCenterQueue = null;
+
+function startLoading() {
+  _loading = true;
+  _loadingElement.update(true);
+}
 
 function doneLoading() {
   if (!_loadingModules && !_loadingDictionaries) {
@@ -34,9 +40,8 @@ function doneLoading() {
 
 function loadModulesWithCallback(modules, callback) {
   _pushingModules = true;
-  _loading = true;
   _loadingModules = true;
-  _loadingElement.update(true);
+  startLoading();
   for (let i = 0; i < modules.length; i++) {
     let moduleScript = new ModuleScript(modules[i], callback);
     _moduleScripts.push(moduleScript);
@@ -50,6 +55,14 @@ function pushContentQueue(next) {
 }
 
 function addQueue() {
+  while (_actionQueue.length > 0) {
+    let nextAction = _actionQueue[0];
+    _actionQueue.shift();
+    if (nextAction === "next") {
+      next();
+    }
+  }
+  _actionQueue = [];
   while (_contentQueue.length > 0) {
     let next = _contentQueue[0];
     _contentQueue.shift();
@@ -59,7 +72,7 @@ function addQueue() {
       addModule(next.name, next.data);
     }
   }
-  _headerCenterQueue = null;
+  _contentQueue = [];
   if (_headerCenterQueue !== null) {
     if (_headerCenterQueue === "none") {
       disableHeader();
@@ -155,8 +168,8 @@ function updateModule(contentIndex, data) {
 
 function loadDictionary(dictionary) {
   socket.emit("requestDictionary", {dictionary: dictionary});
-  _loading = true;
   _loadingDictionaries = true;
+  startLoading();
 }
 
 function getRandomDictionaryWord() {
@@ -226,7 +239,11 @@ function initGame() {
 }
 
 function next() {
-  _game.next();
+  if (!_loading) {
+    _game.next();
+  } else {
+    _actionQueue.push("next");
+  }
 }
 
 socket.on("connect", function() {

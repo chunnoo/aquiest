@@ -3,7 +3,7 @@ function Game() {
   this.scores = [];
   this.correctGuesses = 0;
 
-  this.dictionary = "wordsNo";
+  this.dictionary = "";
 
   this.clientModules = ["point", "path", "draw", "footerWrite", "headerTimer"];
 
@@ -20,7 +20,6 @@ function Game() {
     }
 
     loadModules(["point", "path", "displayDraw", "clientList", "headerTimer"]);
-    loadDictionary(this.dictionary);
 
     roomLoadModules(this.clientModules);
 
@@ -30,7 +29,11 @@ function Game() {
   this.start = function() {
     clear();
 
-    next();
+    addModule("text", {text: "Choose a dictionary!"});
+    toRoom("clearAndAddModules", {modules: [
+      {module: "button", data: {text: "wordsEn", value: "wordsEn"}},
+      {module: "button", data: {text: "wordsNo", value: "wordsNo"}}
+    ]});
   };
 
   this.next = function() {
@@ -57,7 +60,12 @@ function Game() {
   };
 
   this.clientData = function(client, data) {
-    if (client === this.clients[this.currentDrawer]) {
+    if (data.value) {
+      toRoom("clear", {});
+      this.dictionary = data.value;
+      loadDictionary(this.dictionary);
+      next();
+    } else if (client === this.clients[this.currentDrawer]) {
       if (data.paths) {
         updateModule(this.canvas, {paths: data.paths});
       }
